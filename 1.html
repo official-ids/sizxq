@@ -1653,23 +1653,8 @@ button {
    ГЛОБАЛЬНЫЕ КОНСТАНТЫ И СОСТОЯНИЕ
    ============================================================ */
 const APP_CONFIG = {
-    API_KEY_URL: 'https://oris-flax.vercel.app/~/secret/api-keys/mistral.txt',
-    CHAT_ENDPOINT: 'https://api.mistral.ai/v1/chat/completions',
-    MODEL: 'mistral-small-latest',
-SYSTEM_PROMPT: `Ты — интеллектуальный финансовый ассистент, специализирующийся на расчетах в российских рублях, банковской математике, учете наличности, налогах и вкладах.
-
-СТРОГИЕ ПРАВИЛА ОТВЕТОВ:
-1. КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО использовать любые текстовые эмодзи и юникод-смайлы (никаких 😀, ✅, ⚠️, 💰, 📊 и подобных).
-2. Вместо текстовых маркеров списков и иконок ОБЯЗАТЕЛЬНО используй встроенный SVG-код. Примеры:
-   - Информация: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-   - Внимание: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
-   - Галочка: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-   - Стрелка: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-3. Отвечай строго, по делу, на русском языке.
-4. Используй Markdown для форматирования: заголовки, списки, таблицы, код.
-5. Все денежные суммы указывай в формате: число с двумя знаками после запятой и символом ₽ (например: 1 234,56 ₽).
-6. При расчетах показывай пошаговое решение.
-7. Никогда не упоминай название провайдера нейросети. Ты — "Системный ИИ" или "Интеллектуальный финансовый ассистент".`
+    CHAT_ENDPOINT: '/api/chat',
+    MODEL: 'mistral-small-latest'
 };
 
 const STATE = {
@@ -1798,30 +1783,6 @@ function showToast(title, message, type = 'info') {
     }, 4000);
 }
 
-/* ============================================================
-   ЗАГРУЗКА API КЛЮЧА
-   ============================================================ */
-async function loadApiKey() {
-    updateAiStatus('loading', 'ЗАГРУЗКА КЛЮЧА');
-    try {
-        const response = await fetch(APP_CONFIG.API_KEY_URL, { cache: 'no-store' });
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        const text = await response.text();
-        const key = text.trim();
-        if (!key || key.length < 10) {
-            throw new Error('Пустой или некорректный ключ');
-        }
-        STATE.apiKey = key;
-        STATE.apiKeyStatus = 'ready';
-        updateAiStatus('ready', 'СИСТЕМА АКТИВНА');
-        showToast('Система ИИ', 'Интеллектуальный ассистент инициализирован и готов к работе', 'success');
-    } catch (err) {
-        STATE.apiKeyStatus = 'error';
-        updateAiStatus('error', 'ОШИБКА ПОДКЛЮЧЕНИЯ');
-        showToast('Ошибка подключения', 'Не удалось загрузить ключ доступа системного ИИ. Проверьте соединение.', 'error');
-        console.warn('[AI] Key load failed:', err);
-    }
-}
 
 function updateAiStatus(status, text) {
     const dot1 = document.getElementById('aiStatusDot');
@@ -2649,46 +2610,28 @@ async function sendAiMessage(userText) {
     if (!userText.trim()) return;
     if (STATE.isAiResponding) return;
 
-    if (STATE.apiKeyStatus !== 'ready') {
-        showToast('Система недоступна', 'Интеллектуальный ассистент еще не инициализирован или произошла ошибка подключения', 'error');
-        return;
-    }
+    // Убрана проверка STATE.apiKeyStatus — ключ теперь на сервере
 
-    // Добавляем сообщение пользователя
     addMessage('user', userText);
     STATE.chatHistory.push({ role: 'user', content: userText });
 
-    // Очищаем поле ввода
     const input = document.getElementById('aiInput');
     input.value = '';
     autoResizeTextarea(input);
 
-    // Блокируем кнопку отправки
     STATE.isAiResponding = true;
-    const sendBtn = document.getElementById('aiSend');
-    sendBtn.disabled = true;
+    document.getElementById('aiSend').disabled = true;
 
-    // Создаем пузырь для ответа с индикатором печати
     const assistantBubble = addMessage('assistant', '', true);
 
     try {
-        const messages = [
-            { role: 'system', content: APP_CONFIG.SYSTEM_PROMPT },
-            ...STATE.chatHistory
-        ];
-
         const response = await fetch(APP_CONFIG.CHAT_ENDPOINT, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + STATE.apiKey
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 model: APP_CONFIG.MODEL,
-                messages: messages,
-                stream: true,
-                temperature: 0.7,
-                max_tokens: 2048
+                messages: STATE.chatHistory
+                // Ключ НЕ отправляем — он на сервере
             })
         });
 
@@ -2697,7 +2640,7 @@ async function sendAiMessage(userText) {
             throw new Error('HTTP ' + response.status + ': ' + errText.slice(0, 200));
         }
 
-        // Читаем поток
+        // Чтение стрима — без изменений
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let fullContent = '';
@@ -2709,7 +2652,7 @@ async function sendAiMessage(userText) {
 
             buffer += decoder.decode(value, { stream: true });
             const lines = buffer.split('\n');
-            buffer = lines.pop(); // Оставляем неполную строку в буфере
+            buffer = lines.pop();
 
             for (const line of lines) {
                 const trimmed = line.trim();
@@ -2722,35 +2665,28 @@ async function sendAiMessage(userText) {
                     const delta = json.choices?.[0]?.delta?.content;
                     if (delta) {
                         fullContent += delta;
-                        // Обновляем содержимое пузыря в реальном времени
                         assistantBubble.innerHTML = renderMarkdown(fullContent);
-                        const container = document.getElementById('aiMessages');
-                        container.scrollTop = container.scrollHeight;
+                        document.getElementById('aiMessages').scrollTop = 
+                            document.getElementById('aiMessages').scrollHeight;
                     }
-                } catch (e) {
-                    // Игнорируем ошибки парсинга отдельных чанков
-                }
+                } catch (e) {}
             }
         }
 
-        // Финальный рендер
         assistantBubble.innerHTML = renderMarkdown(fullContent);
         STATE.chatHistory.push({ role: 'assistant', content: fullContent });
 
     } catch (err) {
-        console.error('[AI] Request error:', err);
+        console.error('[AI] Error:', err);
         assistantBubble.innerHTML = `
             <div style="color: var(--color-danger);">
-                <strong>Ошибка соединения с системным ИИ</strong><br>
+                <strong>Ошибка соединения</strong><br>
                 <span style="color: var(--color-muted); font-size: 12px;">${err.message}</span>
-            </div>
-        `;
-        showToast('Ошибка ИИ', 'Не удалось получить ответ от ассистента', 'error');
+            </div>`;
+        showToast('Ошибка ИИ', 'Не удалось получить ответ', 'error');
     } finally {
         STATE.isAiResponding = false;
-        sendBtn.disabled = false;
-        const container = document.getElementById('aiMessages');
-        container.scrollTop = container.scrollHeight;
+        document.getElementById('aiSend').disabled = false;
     }
 }
 
