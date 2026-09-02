@@ -1,0 +1,2915 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Калькулятор Рублей и Денежных Знаков</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<style>
+/* ============================================================
+   БАЗОВЫЕ ПЕРЕМЕННЫЕ И СБРОС СТИЛЕЙ
+   ============================================================ */
+:root {
+    --color-bg: #FFFFFF;
+    --color-fg: #000000;
+    --color-accent: #0A192F;
+    --color-accent-2: #002060;
+    --color-border: #000000;
+    --color-muted: #6B7280;
+    --color-soft: #F5F5F5;
+    --color-soft-2: #EAEAEA;
+    --color-danger: #7A0000;
+    --color-success: #064E3B;
+    --font-main: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+    --radius: 2px;
+    --shadow-sm: 0 1px 0 rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    --shadow-lg: 0 12px 40px rgba(10,25,47,0.12);
+    --transition: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-main);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+button, input, select, textarea {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    background: transparent;
+    border: none;
+    outline: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* ============================================================
+   ВЕРХНЯЯ ПАНЕЛЬ ПРИЛОЖЕНИЯ
+   ============================================================ */
+.app-header {
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.app-header-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.brand-mark {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--color-fg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    font-size: 15px;
+}
+
+.brand-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+}
+
+.brand-sub {
+    font-size: 11px;
+    color: var(--color-muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.header-status {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 12px;
+    color: var(--color-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-muted);
+    display: inline-block;
+    margin-right: 6px;
+    transition: background var(--transition);
+}
+
+.status-dot.online {
+    background: var(--color-success);
+    box-shadow: 0 0 0 3px rgba(6,78,59,0.15);
+}
+
+.status-dot.offline {
+    background: var(--color-danger);
+}
+
+/* ============================================================
+   ВКЛАДКИ МОДУЛЕЙ
+   ============================================================ */
+.tabs-bar {
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg);
+}
+
+.tabs-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 32px;
+    display: flex;
+    gap: 0;
+}
+
+.tab-btn {
+    padding: 16px 24px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    border-bottom: 2px solid transparent;
+    transition: all var(--transition);
+    position: relative;
+}
+
+.tab-btn:hover {
+    color: var(--color-fg);
+}
+
+.tab-btn.active {
+    color: var(--color-fg);
+    border-bottom-color: var(--color-accent);
+}
+
+.tab-btn .tab-index {
+    display: inline-block;
+    margin-right: 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-accent);
+}
+
+/* ============================================================
+   ОСНОВНОЙ КОНТЕЙНЕР
+   ============================================================ */
+.main-wrap {
+    flex: 1;
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 32px;
+}
+
+.module-panel {
+    display: none;
+    animation: fadeIn 300ms ease;
+}
+
+.module-panel.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.module-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-soft-2);
+}
+
+.module-title {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.module-subtitle {
+    font-size: 12px;
+    color: var(--color-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 6px;
+}
+
+.module-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-muted);
+    letter-spacing: 0.5px;
+}
+
+/* ============================================================
+   БЛОК А: КАЛЬКУЛЯТОР НАЛИЧНОСТИ
+   ============================================================ */
+.denom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+}
+
+.denom-section {
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+}
+
+.denom-section-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--color-soft);
+}
+
+.denom-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.denom-section-count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-muted);
+}
+
+.denom-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.denom-table th,
+.denom-table td {
+    padding: 12px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-soft-2);
+    font-size: 13px;
+}
+
+.denom-table th {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    background: var(--color-bg);
+}
+
+.denom-table tr:last-child td {
+    border-bottom: none;
+}
+
+.denom-table tr:hover td {
+    background: var(--color-soft);
+}
+
+.denom-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+}
+
+.denom-icon {
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.denom-icon.coin {
+    border-radius: 50%;
+}
+
+.denom-icon.note {
+    border-radius: 2px;
+    background: var(--color-accent);
+    color: #fff;
+    border-color: var(--color-accent);
+}
+
+.denom-value {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-muted);
+    letter-spacing: 0.5px;
+}
+
+.qty-input {
+    width: 100%;
+    max-width: 100px;
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    text-align: right;
+    transition: all var(--transition);
+}
+
+.qty-input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(10,25,47,0.12);
+}
+
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.subtotal-cell {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-align: right;
+    color: var(--color-fg);
+    min-width: 110px;
+}
+
+/* Сводка наличности */
+.cash-summary {
+    margin-top: 28px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+}
+
+.cash-summary-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cash-summary-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.cash-summary-body {
+    padding: 24px 20px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+.total-amount {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.total-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-muted);
+}
+
+.total-value {
+    font-size: 34px;
+    font-weight: 600;
+    letter-spacing: -1px;
+    font-family: var(--font-mono);
+    line-height: 1;
+}
+
+.total-value .kop {
+    font-size: 18px;
+    color: var(--color-muted);
+    margin-left: 4px;
+}
+
+.total-value .cur {
+    font-size: 18px;
+    color: var(--color-accent);
+    margin-right: 8px;
+}
+
+.total-items {
+    font-size: 12px;
+    color: var(--color-muted);
+    margin-top: 8px;
+    font-family: var(--font-mono);
+}
+
+.summary-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn {
+    padding: 10px 18px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: all var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn:hover {
+    background: var(--color-fg);
+    color: var(--color-bg);
+}
+
+.btn.primary {
+    background: var(--color-accent);
+    color: #fff;
+    border-color: var(--color-accent);
+}
+
+.btn.primary:hover {
+    background: var(--color-fg);
+    border-color: var(--color-fg);
+}
+
+.btn.ghost {
+    border-color: var(--color-soft-2);
+    color: var(--color-muted);
+}
+
+.btn.ghost:hover {
+    border-color: var(--color-fg);
+    color: var(--color-fg);
+    background: var(--color-bg);
+}
+
+/* Конвертер суммы */
+.converter-panel {
+    margin-top: 28px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+}
+
+.converter-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--color-soft);
+}
+
+.converter-body {
+    padding: 24px 20px;
+}
+
+.converter-row {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    margin-bottom: 20px;
+}
+
+.converter-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid var(--color-border);
+    font-family: var(--font-mono);
+    font-size: 16px;
+    background: var(--color-bg);
+}
+
+.converter-input:focus {
+    border-color: var(--color-accent);
+}
+
+.breakdown-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+}
+
+.breakdown-item {
+    border: 1px solid var(--color-soft-2);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    transition: all var(--transition);
+}
+
+.breakdown-item.has {
+    border-color: var(--color-border);
+    background: var(--color-soft);
+}
+
+.breakdown-item.empty {
+    opacity: 0.35;
+}
+
+.breakdown-label {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.breakdown-qty {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* ============================================================
+   БЛОК Б: МАТЕМАТИЧЕСКОЕ ЯДРО
+   ============================================================ */
+.calc-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 28px;
+}
+
+.calc-main {
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+}
+
+.calc-display {
+    padding: 24px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-soft);
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+
+.calc-expression {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-muted);
+    min-height: 18px;
+    word-break: break-all;
+    text-align: right;
+    width: 100%;
+}
+
+.calc-result {
+    font-family: var(--font-mono);
+    font-size: 42px;
+    font-weight: 600;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-top: 8px;
+    word-break: break-all;
+    text-align: right;
+    width: 100%;
+}
+
+.calc-result .kop-part {
+    font-size: 22px;
+    color: var(--color-muted);
+}
+
+.calc-pad {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+}
+
+.calc-key {
+    padding: 22px 0;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-weight: 500;
+    border-right: 1px solid var(--color-soft-2);
+    border-bottom: 1px solid var(--color-soft-2);
+    background: var(--color-bg);
+    transition: all var(--transition);
+}
+
+.calc-key:hover {
+    background: var(--color-soft);
+}
+
+.calc-key:active {
+    background: var(--color-accent);
+    color: #fff;
+}
+
+.calc-key.op {
+    color: var(--color-accent);
+    font-weight: 700;
+}
+
+.calc-key.eq {
+    background: var(--color-accent);
+    color: #fff;
+}
+
+.calc-key.eq:hover {
+    background: var(--color-fg);
+}
+
+.calc-key.fn {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-muted);
+}
+
+.calc-key.clear {
+    color: var(--color-danger);
+    font-weight: 700;
+}
+
+/* Боковая панель финансовых функций */
+.finance-side {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.finance-card {
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+}
+
+.finance-card-head {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-soft);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.finance-card-body {
+    padding: 18px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.field:last-child {
+    margin-bottom: 0;
+}
+
+.field-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    font-weight: 600;
+}
+
+.field-input,
+.field-select {
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--color-bg);
+    transition: all var(--transition);
+}
+
+.field-input:focus,
+.field-select:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(10,25,47,0.1);
+}
+
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.finance-result {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border: 1px solid var(--color-border);
+    background: var(--color-soft);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.finance-result .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.finance-result .row .k {
+    color: var(--color-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.finance-result .row .v {
+    font-weight: 600;
+}
+
+.finance-result .row.total {
+    padding-top: 8px;
+    margin-top: 8px;
+    border-top: 1px solid var(--color-soft-2);
+    font-size: 15px;
+}
+
+.finance-result .row.total .v {
+    color: var(--color-accent);
+}
+
+/* ============================================================
+   БЛОК В: ИНТЕЛЛЕКТУАЛЬНЫЙ АССИСТЕНТ
+   ============================================================ */
+.ai-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 28px;
+    height: calc(100vh - 220px);
+    min-height: 600px;
+}
+
+.ai-sidebar {
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ai-sidebar-head {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-soft);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ai-sidebar-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+}
+
+.ai-preset {
+    padding: 12px 14px;
+    border: 1px solid var(--color-soft-2);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ai-preset:hover {
+    border-color: var(--color-border);
+    background: var(--color-soft);
+}
+
+.ai-preset-icon {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ai-preset-text {
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.ai-preset-text .t1 {
+    font-weight: 600;
+    display: block;
+}
+
+.ai-preset-text .t2 {
+    color: var(--color-muted);
+    font-size: 11px;
+}
+
+.ai-sidebar-foot {
+    padding: 14px;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-soft);
+    font-size: 10px;
+    color: var(--color-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ai-main {
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.ai-main-head {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--color-bg);
+}
+
+.ai-main-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ai-main-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.ai-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ai-msg {
+    display: flex;
+    gap: 14px;
+    max-width: 100%;
+    animation: msgIn 300ms ease;
+}
+
+@keyframes msgIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.ai-msg.user {
+    flex-direction: row-reverse;
+}
+
+.ai-avatar {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--color-bg);
+}
+
+.ai-msg.user .ai-avatar {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+}
+
+.ai-bubble {
+    flex: 1;
+    max-width: calc(100% - 60px);
+    padding: 14px 18px;
+    border: 1px solid var(--color-soft-2);
+    background: var(--color-bg);
+    font-size: 14px;
+    line-height: 1.65;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.ai-msg.user .ai-bubble {
+    background: var(--color-soft);
+    border-color: var(--color-border);
+}
+
+.ai-bubble p {
+    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+}
+
+.ai-bubble p:last-child {
+    margin-bottom: 0;
+}
+
+/* Убираем разрыв строки когда SVG идёт перед текстом */
+.ai-bubble p > svg + * {
+    display: inline;
+}
+
+.ai-bubble p > svg {
+    margin-right: 6px;
+}
+
+/* Если в <p> только SVG — убираем отступы */
+.ai-bubble p:has(> svg:only-child) {
+    margin-bottom: 0;
+    display: inline-flex;
+}
+
+.ai-bubble h1, .ai-bubble h2, .ai-bubble h3, .ai-bubble h4 {
+    margin: 14px 0 8px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+}
+
+.ai-bubble h1 { font-size: 18px; }
+.ai-bubble h2 { font-size: 16px; }
+.ai-bubble h3 { font-size: 14px; }
+
+.ai-bubble ul, .ai-bubble ol {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.ai-bubble li {
+    margin-bottom: 4px;
+}
+
+.ai-bubble code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: var(--color-soft);
+    padding: 2px 6px;
+    border: 1px solid var(--color-soft-2);
+}
+
+.ai-bubble pre {
+    background: var(--color-accent);
+    color: #E5E7EB;
+    padding: 14px 16px;
+    margin: 12px 0;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    border: 1px solid var(--color-fg);
+}
+
+.ai-bubble pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border: none;
+}
+
+.ai-bubble table {
+    border-collapse: collapse;
+    margin: 12px 0;
+    width: 100%;
+    font-size: 13px;
+}
+
+.ai-bubble th, .ai-bubble td {
+    border: 1px solid var(--color-border);
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.ai-bubble th {
+    background: var(--color-soft);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.ai-bubble blockquote {
+    border-left: 3px solid var(--color-accent);
+    padding: 4px 14px;
+    margin: 10px 0;
+    color: var(--color-muted);
+    font-style: italic;
+}
+
+.ai-bubble strong {
+    font-weight: 700;
+}
+
+.ai-bubble svg.inline-icon {
+    display: inline !important;
+    vertical-align: -3px !important;
+    margin-right: 4px;
+    color: var(--color-accent);
+}
+
+/* Глобально все SVG внутри пузыря — inline */
+.ai-bubble svg {
+    display: inline !important;
+    vertical-align: middle !important;
+    flex-shrink: 0;
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.ai-bubble svg.inline-icon {
+    display: inline !important;
+    vertical-align: -3px !important;
+    margin-right: 4px;
+    color: var(--color-accent);
+}
+
+.ai-msg.user .ai-bubble svg.inline-icon {
+    color: var(--color-fg);
+}
+
+.ai-msg.user .ai-bubble svg.inline-icon {
+    color: var(--color-fg);
+}
+
+.ai-typing {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px 0;
+}
+
+.ai-typing span {
+    width: 6px;
+    height: 6px;
+    background: var(--color-muted);
+    border-radius: 50%;
+    animation: typing 1.2s infinite;
+}
+
+.ai-typing span:nth-child(2) { animation-delay: 0.2s; }
+.ai-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+    0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-3px); }
+}
+
+.ai-input-area {
+    border-top: 1px solid var(--color-border);
+    padding: 16px 22px;
+    background: var(--color-bg);
+}
+
+.ai-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    border: 1px solid var(--color-border);
+    padding: 10px 12px;
+    background: var(--color-bg);
+    transition: all var(--transition);
+}
+
+.ai-input-row:focus-within {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(10,25,47,0.1);
+}
+
+.ai-input {
+    flex: 1;
+    resize: none;
+    min-height: 24px;
+    max-height: 160px;
+    font-size: 14px;
+    line-height: 1.5;
+    font-family: var(--font-main);
+}
+
+.ai-send {
+    padding: 8px 16px;
+    background: var(--color-accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border: 1px solid var(--color-accent);
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ai-send:hover {
+    background: var(--color-fg);
+    border-color: var(--color-fg);
+}
+
+.ai-send:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.ai-hint {
+    font-size: 10px;
+    color: var(--color-muted);
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+    text-align: right;
+}
+
+/* ============================================================
+   УВЕДОМЛЕНИЯ (TOAST)
+   ============================================================ */
+.toast-wrap {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    min-width: 280px;
+    max-width: 380px;
+    padding: 14px 18px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    font-size: 13px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    box-shadow: var(--shadow-lg);
+    animation: toastIn 300ms ease;
+}
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.toast.error {
+    border-color: var(--color-danger);
+}
+
+.toast.success {
+    border-color: var(--color-success);
+}
+
+.toast-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+}
+
+.toast-body {
+    flex: 1;
+}
+
+.toast-title {
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.toast-msg {
+    color: var(--color-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   СКРОЛЛБАРЫ
+   ============================================================ */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-soft-2);
+    border: 2px solid var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-muted);
+}
+
+/* ============================================================
+   АДАПТИВНОСТЬ
+   ============================================================ */
+@media (max-width: 1100px) {
+    .denom-grid { grid-template-columns: 1fr; }
+    .calc-layout { grid-template-columns: 1fr; }
+    .ai-layout { grid-template-columns: 1fr; height: auto; }
+    .ai-sidebar { max-height: 300px; }
+}
+
+@media (max-width: 700px) {
+    .app-header-inner { padding: 14px 16px; }
+    .main-wrap { padding: 20px 16px; }
+    .tabs-inner { padding: 0 16px; overflow-x: auto; }
+    .tab-btn { padding: 14px 16px; font-size: 11px; }
+    .cash-summary-body { grid-template-columns: 1fr; }
+    .calc-result { font-size: 32px; }
+    .calc-key { padding: 16px 0; font-size: 14px; }
+    .total-value { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     ШАПКА ПРИЛОЖЕНИЯ
+     ============================================================ -->
+<header class="app-header">
+    <div class="app-header-inner">
+        <div class="brand">
+            <div class="brand-mark">₽</div>
+            <div>
+                <div class="brand-title">Калькулятор Рублей</div>
+                <div class="brand-sub">Финансовая Система v2.4</div>
+            </div>
+        </div>
+        <div class="header-status">
+            <div>
+                <span id="aiStatusDot" class="status-dot"></span>
+                <span id="aiStatusText">ИНИЦИАЛИЗАЦИЯ</span>
+            </div>
+            <div id="clockDisplay" style="font-family: var(--font-mono);">--:--:--</div>
+        </div>
+    </div>
+</header>
+
+<!-- ============================================================
+     ВКЛАДКИ
+     ============================================================ -->
+<nav class="tabs-bar">
+    <div class="tabs-inner">
+        <button class="tab-btn active" data-tab="cash">
+            <span class="tab-index">А.</span>Учет Наличности
+        </button>
+        <button class="tab-btn" data-tab="calc">
+            <span class="tab-index">Б.</span>Математическое Ядро
+        </button>
+        <button class="tab-btn" data-tab="ai">
+            <span class="tab-index">В.</span>Интеллектуальный Ассистент
+        </button>
+    </div>
+</nav>
+
+<!-- ============================================================
+     ОСНОВНОЕ СОДЕРЖИМОЕ
+     ============================================================ -->
+<main class="main-wrap">
+
+    <!-- ========== БЛОК А: УЧЕТ НАЛИЧНОСТИ ========== -->
+    <section class="module-panel active" id="panel-cash">
+        <div class="module-header">
+            <div>
+                <div class="module-title">Учет Номиналов и Денежных Знаков</div>
+                <div class="module-subtitle">Калькулятор наличности / Российская Федерация</div>
+            </div>
+            <div class="module-meta">MODULE · A / 03</div>
+        </div>
+
+        <div class="denom-grid">
+            <!-- МОНЕТЫ -->
+            <div class="denom-section">
+                <div class="denom-section-head">
+                    <div class="denom-section-title">Монеты</div>
+                    <div class="denom-section-count" id="coinsCount">8 позиций</div>
+                </div>
+                <table class="denom-table">
+                    <thead>
+                        <tr>
+                            <th>Номинал</th>
+                            <th style="text-align:right;">Количество</th>
+                            <th style="text-align:right;">Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody id="coinsTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- БАНКНОТЫ -->
+            <div class="denom-section">
+                <div class="denom-section-head">
+                    <div class="denom-section-title">Банкноты</div>
+                    <div class="denom-section-count" id="notesCount">8 позиций</div>
+                </div>
+                <table class="denom-table">
+                    <thead>
+                        <tr>
+                            <th>Номинал</th>
+                            <th style="text-align:right;">Количество</th>
+                            <th style="text-align:right;">Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody id="notesTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- СВОДКА -->
+        <div class="cash-summary">
+            <div class="cash-summary-head">
+                <div class="cash-summary-title">Итоговая Сумма</div>
+                <div style="font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px;">REAL-TIME</div>
+            </div>
+            <div class="cash-summary-body">
+                <div class="total-amount">
+                    <div class="total-label">Общая наличность</div>
+                    <div class="total-value">
+                        <span class="cur">₽</span><span id="totalRub">0</span><span class="kop" id="totalKop"> 00 коп</span>
+                    </div>
+                    <div class="total-items" id="totalItems">0 монет · 0 банкнот · 0 позиций</div>
+                </div>
+                <div class="summary-actions">
+                    <button class="btn primary" id="btnDecompose">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                        Разложить на номиналы
+                    </button>
+                    <button class="btn" id="btnClearAll">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                        Очистить все
+                    </button>
+                    <button class="btn ghost" id="btnCopyTotal">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Копировать сумму
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- КОНВЕРТЕР -->
+        <div class="converter-panel">
+            <div class="converter-head">
+                <div class="denom-section-title">Конвертер суммы в номиналы</div>
+                <div class="denom-section-count" style="font-family: var(--font-mono); font-size: 11px;">GREEDY ALGORITHM</div>
+            </div>
+            <div class="converter-body">
+                <div class="converter-row">
+                    <input type="text" class="converter-input" id="converterInput" placeholder="Введите сумму, например: 13570.50" />
+                    <button class="btn primary" id="btnConvert">Разложить</button>
+                    <button class="btn ghost" id="btnUseTotal">Взять итог</button>
+                </div>
+                <div class="breakdown-grid" id="breakdownGrid"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== БЛОК Б: МАТЕМАТИЧЕСКОЕ ЯДРО ========== -->
+    <section class="module-panel" id="panel-calc">
+        <div class="module-header">
+            <div>
+                <div class="module-title">Математическое Ядро</div>
+                <div class="module-subtitle">Рубли и копейки / Финансовые вычисления</div>
+            </div>
+            <div class="module-meta">MODULE · B / 03</div>
+        </div>
+
+        <div class="calc-layout">
+            <!-- ОСНОВНОЙ КАЛЬКУЛЯТОР -->
+            <div class="calc-main">
+                <div class="calc-display">
+                    <div class="calc-expression" id="calcExpr">&nbsp;</div>
+                    <div class="calc-result" id="calcResult">0<span class="kop-part">,00 ₽</span></div>
+                </div>
+                <div class="calc-pad" id="calcPad">
+                    <!-- Клавиши будут сгенерированы JS -->
+                </div>
+            </div>
+
+            <!-- ФИНАНСОВЫЕ ФУНКЦИИ -->
+            <div class="finance-side">
+                <!-- НДС -->
+                <div class="finance-card">
+                    <div class="finance-card-head">
+                        <span>Налог на Добавленную Стоимость</span>
+                        <span style="font-family: var(--font-mono); color: var(--color-muted);">VAT</span>
+                    </div>
+                    <div class="finance-card-body">
+                        <div class="field">
+                            <label class="field-label">Сумма (руб)</label>
+                            <input type="text" class="field-input" id="vatAmount" placeholder="1000.00" />
+                        </div>
+                        <div class="field-row">
+                            <div class="field">
+                                <label class="field-label">Операция</label>
+                                <select class="field-select" id="vatOp">
+                                    <option value="extract">Выделить НДС</option>
+                                    <option value="add">Начислить НДС</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Ставка</label>
+                                <select class="field-select" id="vatRate">
+                                    <option value="20">20%</option>
+                                    <option value="10">10%</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn primary" style="width:100%; margin-top: 6px;" id="btnCalcVat">Рассчитать</button>
+                        <div class="finance-result" id="vatResult" style="display:none;"></div>
+                    </div>
+                </div>
+
+                <!-- СКИДКА -->
+                <div class="finance-card">
+                    <div class="finance-card-head">
+                        <span>Расчет Скидки</span>
+                        <span style="font-family: var(--font-mono); color: var(--color-muted);">DISC</span>
+                    </div>
+                    <div class="finance-card-body">
+                        <div class="field-row">
+                            <div class="field">
+                                <label class="field-label">Цена (руб)</label>
+                                <input type="text" class="field-input" id="discPrice" placeholder="5000.00" />
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Скидка (%)</label>
+                                <input type="text" class="field-input" id="discPercent" placeholder="15" />
+                            </div>
+                        </div>
+                        <button class="btn primary" style="width:100%; margin-top: 6px;" id="btnCalcDisc">Рассчитать</button>
+                        <div class="finance-result" id="discResult" style="display:none;"></div>
+                    </div>
+                </div>
+
+                <!-- ВКЛАД -->
+                <div class="finance-card">
+                    <div class="finance-card-head">
+                        <span>Проценты по Вкладу</span>
+                        <span style="font-family: var(--font-mono); color: var(--color-muted);">DEP</span>
+                    </div>
+                    <div class="finance-card-body">
+                        <div class="field">
+                            <label class="field-label">Сумма вклада (руб)</label>
+                            <input type="text" class="field-input" id="depAmount" placeholder="100000" />
+                        </div>
+                        <div class="field-row">
+                            <div class="field">
+                                <label class="field-label">Ставка (% годовых)</label>
+                                <input type="text" class="field-input" id="depRate" placeholder="18" />
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Срок (мес)</label>
+                                <input type="text" class="field-input" id="depTerm" placeholder="12" />
+                            </div>
+                        </div>
+                        <button class="btn primary" style="width:100%; margin-top: 6px;" id="btnCalcDep">Рассчитать</button>
+                        <div class="finance-result" id="depResult" style="display:none;"></div>
+                    </div>
+                </div>
+
+                <!-- АННУИТЕТ -->
+                <div class="finance-card">
+                    <div class="finance-card-head">
+                        <span>Аннуитетный Платеж</span>
+                        <span style="font-family: var(--font-mono); color: var(--color-muted);">ANN</span>
+                    </div>
+                    <div class="finance-card-body">
+                        <div class="field">
+                            <label class="field-label">Сумма кредита (руб)</label>
+                            <input type="text" class="field-input" id="annAmount" placeholder="1000000" />
+                        </div>
+                        <div class="field-row">
+                            <div class="field">
+                                <label class="field-label">Ставка (% годовых)</label>
+                                <input type="text" class="field-input" id="annRate" placeholder="16" />
+                            </div>
+                            <div class="field">
+                                <label class="field-label">Срок (мес)</label>
+                                <input type="text" class="field-input" id="annTerm" placeholder="24" />
+                            </div>
+                        </div>
+                        <button class="btn primary" style="width:100%; margin-top: 6px;" id="btnCalcAnn">Рассчитать</button>
+                        <div class="finance-result" id="annResult" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== БЛОК В: ИНТЕЛЛЕКТУАЛЬНЫЙ АССИСТЕНТ ========== -->
+    <section class="module-panel" id="panel-ai">
+        <div class="module-header">
+            <div>
+                <div class="module-title">Интеллектуальный Финансовый Ассистент</div>
+                <div class="module-subtitle">Системный ИИ / Консультации и расчеты</div>
+            </div>
+            <div class="module-meta">MODULE · C / 03</div>
+        </div>
+
+        <div class="ai-layout">
+            <!-- БОКОВАЯ ПАНЕЛЬ -->
+            <aside class="ai-sidebar">
+                <div class="ai-sidebar-head">
+                    <span>Быстрые Запросы</span>
+                    <span style="font-family: var(--font-mono); color: var(--color-muted);">PRESET</span>
+                </div>
+                <div class="ai-sidebar-body" id="presetsList">
+                    <!-- Пресеты генерируются JS -->
+                </div>
+                <div class="ai-sidebar-foot">
+                    <span id="aiStatusDot2" class="status-dot"></span>
+                    <span id="aiStatusText2">Система неактивна</span>
+                </div>
+            </aside>
+
+            <!-- ОСНОВНАЯ ОБЛАСТЬ ЧАТА -->
+            <div class="ai-main">
+                <div class="ai-main-head">
+                    <div class="ai-main-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                        Диалог с Системным ИИ
+                    </div>
+                    <div class="ai-main-actions">
+                        <button class="btn ghost" id="btnClearChat">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                            Очистить
+                        </button>
+                        <button class="btn ghost" id="btnExportChat">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                            Экспорт
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ai-messages" id="aiMessages">
+                    <!-- Сообщения генерируются JS -->
+                </div>
+
+                <div class="ai-input-area">
+                    <div class="ai-input-row">
+                        <textarea class="ai-input" id="aiInput" placeholder="Задайте вопрос по финансам, расчетам или банковским операциям..." rows="1"></textarea>
+                        <button class="ai-send" id="aiSend">
+                            Отправить
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        </button>
+                    </div>
+                    <div class="ai-hint">Enter — отправить · Shift+Enter — новая строка</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- Toast уведомления -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ============================================================
+   ГЛОБАЛЬНЫЕ КОНСТАНТЫ И СОСТОЯНИЕ
+   ============================================================ */
+const APP_CONFIG = {
+    API_KEY_URL: 'https://oris-flax.vercel.app/~/secret/api-keys/mistral.txt',
+    CHAT_ENDPOINT: 'https://api.mistral.ai/v1/chat/completions',
+    MODEL: 'mistral-small-latest',
+SYSTEM_PROMPT: `Ты — интеллектуальный финансовый ассистент, специализирующийся на расчетах в российских рублях, банковской математике, учете наличности, налогах и вкладах.
+
+СТРОГИЕ ПРАВИЛА ОТВЕТОВ:
+1. КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО использовать любые текстовые эмодзи и юникод-смайлы (никаких 😀, ✅, ⚠️, 💰, 📊 и подобных).
+2. Вместо текстовых маркеров списков и иконок ОБЯЗАТЕЛЬНО используй встроенный SVG-код. Примеры:
+   - Информация: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+   - Внимание: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+   - Галочка: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+   - Стрелка: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+3. Отвечай строго, по делу, на русском языке.
+4. Используй Markdown для форматирования: заголовки, списки, таблицы, код.
+5. Все денежные суммы указывай в формате: число с двумя знаками после запятой и символом ₽ (например: 1 234,56 ₽).
+6. При расчетах показывай пошаговое решение.
+7. Никогда не упоминай название провайдера нейросети. Ты — "Системный ИИ" или "Интеллектуальный финансовый ассистент".`
+};
+
+const STATE = {
+    apiKey: null,
+    apiKeyStatus: 'loading', // loading | ready | error
+    chatHistory: [],
+    isAiResponding: false,
+    calcExpression: '',
+    calcLastResult: '0',
+    calcMemory: 0
+};
+
+/* ============================================================
+   НОМИНАЛЫ ДЕНЕЖНЫХ ЗНАКОВ РФ
+   ============================================================ */
+const COINS = [
+    { value: 0.01, label: '1 копейка', short: '1 коп' },
+    { value: 0.05, label: '5 копеек', short: '5 коп' },
+    { value: 0.10, label: '10 копеек', short: '10 коп' },
+    { value: 0.50, label: '50 копеек', short: '50 коп' },
+    { value: 1, label: '1 рубль', short: '1 ₽' },
+    { value: 2, label: '2 рубля', short: '2 ₽' },
+    { value: 5, label: '5 рублей', short: '5 ₽' },
+    { value: 10, label: '10 рублей', short: '10 ₽' }
+];
+
+const NOTES = [
+    { value: 10, label: '10 рублей', short: '10 ₽' },
+    { value: 50, label: '50 рублей', short: '50 ₽' },
+    { value: 100, label: '100 рублей', short: '100 ₽' },
+    { value: 200, label: '200 рублей', short: '200 ₽' },
+    { value: 500, label: '500 рублей', short: '500 ₽' },
+    { value: 1000, label: '1 000 рублей', short: '1000 ₽' },
+    { value: 2000, label: '2 000 рублей', short: '2000 ₽' },
+    { value: 5000, label: '5 000 рублей', short: '5000 ₽' }
+];
+
+const ALL_DENOMINATIONS = [...NOTES, ...COINS].sort((a, b) => b.value - a.value);
+
+/* ============================================================
+   УТИЛИТЫ: ТОЧНАЯ АРИФМЕТИКА В КОПЕЙКАХ
+   ============================================================ */
+function toKopecks(rubles) {
+    // Избегаем ошибок float: умножаем на 100 и округляем
+    return Math.round(Number(rubles) * 100);
+}
+
+function fromKopecks(kopecks) {
+    return Number(kopecks) / 100;
+}
+
+function formatMoney(rubles) {
+    const k = toKopecks(rubles);
+    const sign = k < 0 ? '-' : '';
+    const absK = Math.abs(k);
+    const rubPart = Math.floor(absK / 100);
+    const kopPart = absK % 100;
+    const rubFormatted = rubPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return `${sign}${rubFormatted},${kopPart.toString().padStart(2, '0')}`;
+}
+
+function formatMoneyShort(rubles) {
+    return formatMoney(rubles) + ' ₽';
+}
+
+function parseMoneyInput(str) {
+    if (!str) return NaN;
+    const cleaned = String(str).replace(/\s/g, '').replace(',', '.').replace(/[^\d.\-]/g, '');
+    const n = parseFloat(cleaned);
+    return isNaN(n) ? NaN : n;
+}
+
+/* ============================================================
+   УТИЛИТЫ: СКЛОНЕНИЕ РУССКИХ СЛОВ
+   ============================================================ */
+function declensionRu(n, forms) {
+    // forms: [1, 2-4, 5-20]
+    const abs = Math.abs(n) % 100;
+    const n1 = abs % 10;
+    if (abs > 10 && abs < 20) return forms[2];
+    if (n1 > 1 && n1 < 5) return forms[1];
+    if (n1 === 1) return forms[0];
+    return forms[2];
+}
+
+function rublesWord(n) {
+    return declensionRu(n, ['рубль', 'рубля', 'рублей']);
+}
+
+function kopecksWord(n) {
+    return declensionRu(n, ['копейка', 'копейки', 'копеек']);
+}
+
+function itemsWord(n, type) {
+    if (type === 'coin') return declensionRu(n, ['монета', 'монеты', 'монет']);
+    return declensionRu(n, ['банкнота', 'банкноты', 'банкнот']);
+}
+
+/* ============================================================
+   УВЕДОМЛЕНИЯ (TOAST)
+   ============================================================ */
+function showToast(title, message, type = 'info') {
+    const wrap = document.getElementById('toastWrap');
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+
+    const iconSvg = type === 'error'
+        ? '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>'
+        : type === 'success'
+        ? '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>'
+        : '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>';
+
+    toast.innerHTML = `
+        ${iconSvg}
+        <div class="toast-body">
+            <div class="toast-title">${title}</div>
+            <div class="toast-msg">${message}</div>
+        </div>
+    `;
+    wrap.appendChild(toast);
+    setTimeout(() => {
+        toast.style.transition = 'opacity 300ms, transform 300ms';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(20px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+/* ============================================================
+   ЗАГРУЗКА API КЛЮЧА
+   ============================================================ */
+async function loadApiKey() {
+    updateAiStatus('loading', 'ЗАГРУЗКА КЛЮЧА');
+    try {
+        const response = await fetch(APP_CONFIG.API_KEY_URL, { cache: 'no-store' });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const text = await response.text();
+        const key = text.trim();
+        if (!key || key.length < 10) {
+            throw new Error('Пустой или некорректный ключ');
+        }
+        STATE.apiKey = key;
+        STATE.apiKeyStatus = 'ready';
+        updateAiStatus('ready', 'СИСТЕМА АКТИВНА');
+        showToast('Система ИИ', 'Интеллектуальный ассистент инициализирован и готов к работе', 'success');
+    } catch (err) {
+        STATE.apiKeyStatus = 'error';
+        updateAiStatus('error', 'ОШИБКА ПОДКЛЮЧЕНИЯ');
+        showToast('Ошибка подключения', 'Не удалось загрузить ключ доступа системного ИИ. Проверьте соединение.', 'error');
+        console.warn('[AI] Key load failed:', err);
+    }
+}
+
+function updateAiStatus(status, text) {
+    const dot1 = document.getElementById('aiStatusDot');
+    const txt1 = document.getElementById('aiStatusText');
+    const dot2 = document.getElementById('aiStatusDot2');
+    const txt2 = document.getElementById('aiStatusText2');
+
+    dot1.className = 'status-dot';
+    dot2.className = 'status-dot';
+
+    if (status === 'ready') {
+        dot1.classList.add('online');
+        dot2.classList.add('online');
+    } else if (status === 'error') {
+        dot1.classList.add('offline');
+        dot2.classList.add('offline');
+    }
+
+    txt1.textContent = text;
+    txt2.textContent = text.toLowerCase();
+}
+
+/* ============================================================
+   ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+   ============================================================ */
+function initTabs() {
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.module-panel');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+            tabs.forEach(t => t.classList.remove('active'));
+            panels.forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById('panel-' + target).classList.add('active');
+        });
+    });
+}
+
+/* ============================================================
+   БЛОК А: РЕНДЕР ТАБЛИЦ НОМИНАЛОВ
+   ============================================================ */
+function renderDenominationTable(items, tbodyId, type) {
+    const tbody = document.getElementById(tbodyId);
+    tbody.innerHTML = '';
+
+    items.forEach((item, idx) => {
+        const tr = document.createElement('tr');
+        const iconClass = type === 'coin' ? 'coin' : 'note';
+        const iconText = type === 'coin'
+            ? (item.value < 1 ? Math.round(item.value * 100) + 'к' : Math.round(item.value))
+            : (item.value >= 1000 ? (item.value / 1000) + 'K' : item.value);
+
+        tr.innerHTML = `
+            <td>
+                <div class="denom-label">
+                    <div class="denom-icon ${iconClass}">${iconText}</div>
+                    <div>
+                        <div>${item.label}</div>
+                        <div class="denom-value">${item.short}</div>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align:right;">
+                <input type="number" min="0" step="1" value="0"
+                    class="qty-input"
+                    data-value="${item.value}"
+                    data-type="${type}"
+                    data-idx="${idx}" />
+            </td>
+            <td class="subtotal-cell" data-subtotal="${item.value}">0,00 ₽</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Навешиваем обработчики
+    tbody.querySelectorAll('.qty-input').forEach(input => {
+        input.addEventListener('input', onQuantityChange);
+        input.addEventListener('change', onQuantityChange);
+    });
+}
+
+function onQuantityChange(e) {
+    const input = e.target;
+    let qty = parseInt(input.value, 10);
+    if (isNaN(qty) || qty < 0) qty = 0;
+    input.value = qty;
+
+    const value = parseFloat(input.dataset.value);
+    const subtotalKop = toKopecks(value) * qty;
+    const subtotalRub = fromKopecks(subtotalKop);
+
+    const row = input.closest('tr');
+    const subtotalCell = row.querySelector('.subtotal-cell');
+    subtotalCell.textContent = formatMoneyShort(subtotalRub);
+
+    updateTotalSummary();
+}
+
+function updateTotalSummary() {
+    let totalKop = 0;
+    let totalCoins = 0;
+    let totalNotes = 0;
+    let totalItems = 0;
+
+    document.querySelectorAll('#coinsTableBody .qty-input').forEach(input => {
+        const qty = parseInt(input.value, 10) || 0;
+        const value = parseFloat(input.dataset.value);
+        totalKop += toKopecks(value) * qty;
+        totalCoins += qty;
+        if (qty > 0) totalItems++;
+    });
+
+    document.querySelectorAll('#notesTableBody .qty-input').forEach(input => {
+        const qty = parseInt(input.value, 10) || 0;
+        const value = parseFloat(input.dataset.value);
+        totalKop += toKopecks(value) * qty;
+        totalNotes += qty;
+        if (qty > 0) totalItems++;
+    });
+
+    const totalRub = fromKopecks(totalKop);
+    const absK = Math.abs(totalKop);
+    const rubPart = Math.floor(absK / 100);
+    const kopPart = absK % 100;
+
+    document.getElementById('totalRub').textContent = rubPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    document.getElementById('totalKop').textContent = ' ' + kopPart.toString().padStart(2, '0') + ' коп';
+
+    const coinsLabel = totalCoins + ' ' + itemsWord(totalCoins, 'coin');
+    const notesLabel = totalNotes + ' ' + itemsWord(totalNotes, 'note');
+    document.getElementById('totalItems').textContent = `${coinsLabel} · ${notesLabel} · ${totalItems} позиц.`;
+
+    STATE.cashTotalKop = totalKop;
+}
+
+function clearAllQuantities() {
+    document.querySelectorAll('.qty-input').forEach(input => {
+        input.value = 0;
+    });
+    document.querySelectorAll('.subtotal-cell').forEach(cell => {
+        cell.textContent = '0,00 ₽';
+    });
+    updateTotalSummary();
+    showToast('Очистка', 'Все поля количества обнулены', 'success');
+}
+
+function copyTotalToClipboard() {
+    const rub = document.getElementById('totalRub').textContent;
+    const kop = document.getElementById('totalKop').textContent.trim();
+    const text = rub + ' ' + kop;
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Скопировано', 'Сумма в буфере обмена: ' + text, 'success');
+    }).catch(() => {
+        showToast('Ошибка', 'Не удалось скопировать в буфер', 'error');
+    });
+}
+
+/* ============================================================
+   БЛОК А: РАЗЛОЖЕНИЕ СУММЫ НА НОМИНАЛЫ
+   ============================================================ */
+function decomposeAmount(amountRub) {
+    let remaining = toKopecks(amountRub);
+    const result = [];
+
+    ALL_DENOMINATIONS.forEach(denom => {
+        const denomKop = toKopecks(denom.value);
+        if (remaining >= denomKop) {
+            const count = Math.floor(remaining / denomKop);
+            remaining -= count * denomKop;
+            result.push({ ...denom, count });
+        }
+    });
+
+    return { items: result, remainderKop: remaining };
+}
+
+function renderBreakdown(amountRub) {
+    const grid = document.getElementById('breakdownGrid');
+    grid.innerHTML = '';
+
+    if (isNaN(amountRub) || amountRub <= 0) {
+        grid.innerHTML = '<div style="color: var(--color-muted); font-size: 12px; padding: 10px;">Введите корректную положительную сумму</div>';
+        return;
+    }
+
+    const { items } = decomposeAmount(amountRub);
+
+    // Показываем все номиналы, даже с нулевым количеством
+    ALL_DENOMINATIONS.forEach(denom => {
+        const found = items.find(i => i.value === denom.value);
+        const count = found ? found.count : 0;
+        const isCoin = COINS.some(c => c.value === denom.value);
+
+        const div = document.createElement('div');
+        div.className = 'breakdown-item ' + (count > 0 ? 'has' : 'empty');
+        div.innerHTML = `
+            <div>
+                <div class="breakdown-label">${denom.short}</div>
+                <div style="font-size: 10px; color: var(--color-muted); margin-top: 2px;">${isCoin ? 'монет' : 'банкнот'}</div>
+            </div>
+            <div class="breakdown-qty">× ${count}</div>
+        `;
+        grid.appendChild(div);
+    });
+}
+
+function onConvertClick() {
+    const input = document.getElementById('converterInput');
+    const amount = parseMoneyInput(input.value);
+    if (isNaN(amount) || amount <= 0) {
+        showToast('Ошибка ввода', 'Введите корректную сумму для разложения', 'error');
+        return;
+    }
+    renderBreakdown(amount);
+}
+
+function onUseTotalClick() {
+    if (!STATE.cashTotalKop || STATE.cashTotalKop <= 0) {
+        showToast('Нет суммы', 'Сначала укажите количество денежных знаков', 'error');
+        return;
+    }
+    const amount = fromKopecks(STATE.cashTotalKop);
+    document.getElementById('converterInput').value = formatMoney(amount).replace(',', '.').replace(/\s/g, '');
+    renderBreakdown(amount);
+}
+
+function onDecomposeClick() {
+    if (!STATE.cashTotalKop || STATE.cashTotalKop <= 0) {
+        showToast('Нет суммы', 'Сначала укажите количество денежных знаков', 'error');
+        return;
+    }
+    const amount = fromKopecks(STATE.cashTotalKop);
+    document.getElementById('converterInput').value = formatMoney(amount).replace(',', '.').replace(/\s/g, '');
+    renderBreakdown(amount);
+
+    // Прокрутка к конвертеру
+    document.querySelector('.converter-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ============================================================
+   БЛОК Б: КАЛЬКУЛЯТОР — КЛАВИАТУРА
+   ============================================================ */
+const CALC_KEYS = [
+    { label: 'MC', type: 'mem', action: 'MC', cls: 'fn' },
+    { label: 'MR', type: 'mem', action: 'MR', cls: 'fn' },
+    { label: 'M+', type: 'mem', action: 'M+', cls: 'fn' },
+    { label: 'M−', type: 'mem', action: 'M-', cls: 'fn' },
+    { label: 'C', type: 'clear', action: 'C', cls: 'clear' },
+
+    { label: '7', type: 'num', action: '7' },
+    { label: '8', type: 'num', action: '8' },
+    { label: '9', type: 'num', action: '9' },
+    { label: '÷', type: 'op', action: '/' },
+    { label: '⌫', type: 'fn', action: 'BACK', cls: 'fn' },
+
+    { label: '4', type: 'num', action: '4' },
+    { label: '5', type: 'num', action: '5' },
+    { label: '6', type: 'num', action: '6' },
+    { label: '×', type: 'op', action: '*' },
+    { label: '%', type: 'fn', action: '%', cls: 'fn' },
+
+    { label: '1', type: 'num', action: '1' },
+    { label: '2', type: 'num', action: '2' },
+    { label: '3', type: 'num', action: '3' },
+    { label: '−', type: 'op', action: '-' },
+    { label: '1/x', type: 'fn', action: '1/X', cls: 'fn' },
+
+    { label: '0', type: 'num', action: '0' },
+    { label: '00', type: 'num', action: '00' },
+    { label: ',', type: 'num', action: '.' },
+    { label: '+', type: 'op', action: '+' },
+    { label: '=', type: 'eq', action: '=', cls: 'eq' }
+];
+
+function renderCalcPad() {
+    const pad = document.getElementById('calcPad');
+    pad.innerHTML = '';
+
+    CALC_KEYS.forEach(key => {
+        const btn = document.createElement('button');
+        btn.className = 'calc-key ' + (key.cls || '');
+        btn.textContent = key.label;
+        btn.dataset.action = key.action;
+        btn.dataset.type = key.type;
+        btn.addEventListener('click', () => handleCalcKey(key));
+        pad.appendChild(btn);
+    });
+}
+
+function handleCalcKey(key) {
+    const expr = STATE.calcExpression;
+
+    if (key.type === 'num') {
+        // Точка (запятая) — только одна на число
+        if (key.action === '.') {
+            // Найти текущее число в конце выражения
+            const match = expr.match(/[\d]*\.?[\d]*$/);
+            if (match && match[0].includes('.')) return;
+            if (!match || match[0] === '') {
+                STATE.calcExpression = expr + '0.';
+            } else {
+                STATE.calcExpression = expr + '.';
+            }
+        } else {
+            STATE.calcExpression = expr + key.action;
+        }
+        updateCalcDisplay();
+        return;
+    }
+
+    if (key.type === 'op') {
+        // Если выражение пустое или заканчивается оператором — заменяем
+        if (expr === '' || /[+\-*/]$/.test(expr.trim())) {
+            STATE.calcExpression = expr.trim().slice(0, -1) + key.action;
+        } else {
+            STATE.calcExpression = expr + key.action;
+        }
+        updateCalcDisplay();
+        return;
+    }
+
+    if (key.action === 'C') {
+        STATE.calcExpression = '';
+        STATE.calcLastResult = '0';
+        updateCalcDisplay();
+        return;
+    }
+
+    if (key.action === 'BACK') {
+        STATE.calcExpression = expr.slice(0, -1);
+        updateCalcDisplay();
+        return;
+    }
+
+    if (key.action === '%') {
+        // Преобразуем последнее число в процент (делим на 100)
+        const match = expr.match(/(\d+\.?\d*)$/);
+        if (match) {
+            const num = parseFloat(match[1]);
+            const percent = num / 100;
+            STATE.calcExpression = expr.slice(0, -match[1].length) + percent.toString();
+            updateCalcDisplay();
+        }
+        return;
+    }
+
+    if (key.action === '1/X') {
+        try {
+            const result = evaluateExpression(expr);
+            if (result === 0) {
+                showToast('Ошибка', 'Деление на ноль невозможно', 'error');
+                return;
+            }
+            const inv = 1 / result;
+            STATE.calcExpression = inv.toString();
+            STATE.calcLastResult = inv.toString();
+            updateCalcDisplay();
+        } catch (e) {
+            showToast('Ошибка', 'Некорректное выражение', 'error');
+        }
+        return;
+    }
+
+    if (key.action === '=') {
+        try {
+            const result = evaluateExpression(expr);
+            STATE.calcLastResult = result.toString();
+            STATE.calcExpression = result.toString();
+            updateCalcDisplay(true);
+        } catch (e) {
+            showToast('Ошибка', 'Некорректное выражение', 'error');
+        }
+        return;
+    }
+
+    // Память
+    if (key.action === 'MC') { STATE.calcMemory = 0; showToast('Память', 'Память калькулятора очищена', 'info'); return; }
+    if (key.action === 'MR') {
+        STATE.calcExpression = STATE.calcExpression + STATE.calcMemory.toString();
+        updateCalcDisplay();
+        return;
+    }
+    if (key.action === 'M+') {
+        try {
+            const r = evaluateExpression(expr || STATE.calcLastResult);
+            STATE.calcMemory += r;
+            showToast('Память', 'M+ = ' + formatMoneyShort(STATE.calcMemory), 'success');
+        } catch (e) {}
+        return;
+    }
+    if (key.action === 'M-') {
+        try {
+            const r = evaluateExpression(expr || STATE.calcLastResult);
+            STATE.calcMemory -= r;
+            showToast('Память', 'M− = ' + formatMoneyShort(STATE.calcMemory), 'success');
+        } catch (e) {}
+        return;
+    }
+}
+
+/* ============================================================
+   БЛОК Б: ТОЧНЫЙ ВЫЧИСЛИТЕЛЬ ВЫРАЖЕНИЙ
+   Работает через копейки (целые числа) для избежания float-ошибок
+   ============================================================ */
+function evaluateExpression(expr) {
+    if (!expr || !expr.trim()) return 0;
+
+    // Нормализуем: заменяем запятую на точку
+    let normalized = expr.replace(/,/g, '.').replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+
+    // Токенизация: числа и операторы
+    const tokens = [];
+    let i = 0;
+    while (i < normalized.length) {
+        const ch = normalized[i];
+        if (ch === ' ') { i++; continue; }
+        if ('+-*/'.includes(ch)) {
+            tokens.push({ type: 'op', value: ch });
+            i++;
+        } else if (/[\d.]/.test(ch)) {
+            let numStr = '';
+            while (i < normalized.length && /[\d.]/.test(normalized[i])) {
+                numStr += normalized[i];
+                i++;
+            }
+            tokens.push({ type: 'num', value: parseFloat(numStr) });
+        } else {
+            i++;
+        }
+    }
+
+    if (tokens.length === 0) return 0;
+
+    // Сначала обрабатываем * и /
+    let work = [...tokens];
+    let k = 0;
+    while (k < work.length) {
+        if (work[k].type === 'op' && (work[k].value === '*' || work[k].value === '/')) {
+            const left = work[k - 1];
+            const right = work[k + 1];
+            if (!left || !right || left.type !== 'num' || right.type !== 'num') {
+                throw new Error('Invalid expression');
+            }
+            // Работаем в копейках
+            const leftKop = toKopecks(left.value);
+            const rightKop = toKopecks(right.value);
+            let resultKop;
+            if (work[k].value === '*') {
+                // a * b: (aKop * bKop) / 100
+                resultKop = Math.round((leftKop * rightKop) / 100);
+            } else {
+                if (rightKop === 0) throw new Error('Division by zero');
+                // a / b: (aKop * 100) / bKop
+                resultKop = Math.round((leftKop * 100) / rightKop);
+            }
+            work.splice(k - 1, 3, { type: 'num', value: fromKopecks(resultKop) });
+            k = Math.max(0, k - 2);
+        } else {
+            k++;
+        }
+    }
+
+    // Теперь обрабатываем + и -
+    let resultKop = toKopecks(work[0].value);
+    for (let j = 1; j < work.length; j += 2) {
+        const op = work[j];
+        const right = work[j + 1];
+        if (!op || !right || op.type !== 'op' || right.type !== 'num') {
+            throw new Error('Invalid expression');
+        }
+        const rightKop = toKopecks(right.value);
+        if (op.value === '+') resultKop += rightKop;
+        else if (op.value === '-') resultKop -= rightKop;
+    }
+
+    return fromKopecks(resultKop);
+}
+
+function updateCalcDisplay(isFinal = false) {
+    const exprEl = document.getElementById('calcExpr');
+    const resultEl = document.getElementById('calcResult');
+
+    const expr = STATE.calcExpression;
+    const displayExpr = expr
+        .replace(/\*/g, '×')
+        .replace(/\//g, '÷')
+        .replace(/-/g, '−');
+
+    exprEl.innerHTML = displayExpr || '&nbsp;';
+
+    // Пытаемся вычислить текущее выражение для предпросмотра
+    let preview;
+    try {
+        if (expr && !/[+\-*/.]$/.test(expr.trim())) {
+            preview = evaluateExpression(expr);
+        } else {
+            preview = parseFloat(STATE.calcLastResult);
+        }
+    } catch (e) {
+        preview = parseFloat(STATE.calcLastResult);
+    }
+
+    if (isNaN(preview)) preview = 0;
+
+    const absK = Math.abs(toKopecks(preview));
+    const rubPart = Math.floor(absK / 100);
+    const kopPart = absK % 100;
+    const sign = preview < 0 ? '−' : '';
+
+    resultEl.innerHTML = `${sign}${rubPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}<span class="kop-part">,${kopPart.toString().padStart(2, '0')} ₽</span>`;
+}
+
+/* ============================================================
+   БЛОК Б: ФИНАНСОВЫЕ ФУНКЦИИ
+   ============================================================ */
+
+// НДС
+function calcVat() {
+    const amount = parseMoneyInput(document.getElementById('vatAmount').value);
+    const op = document.getElementById('vatOp').value;
+    const rate = parseFloat(document.getElementById('vatRate').value);
+
+    if (isNaN(amount) || amount <= 0) {
+        showToast('Ошибка', 'Введите корректную сумму', 'error');
+        return;
+    }
+
+    const amountKop = toKopecks(amount);
+    let vatKop, resultKop, baseKop;
+
+    if (op === 'add') {
+        // Начислить НДС: сумма * rate / 100
+        vatKop = Math.round((amountKop * rate) / 100);
+        baseKop = amountKop;
+        resultKop = amountKop + vatKop;
+    } else {
+        // Выделить НДС из суммы с НДС: amount * rate / (100 + rate)
+        vatKop = Math.round((amountKop * rate) / (100 + rate));
+        baseKop = amountKop - vatKop;
+        resultKop = amountKop;
+    }
+
+    const resultDiv = document.getElementById('vatResult');
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = `
+        <div class="row"><span class="k">База без НДС</span><span class="v">${formatMoneyShort(fromKopecks(baseKop))}</span></div>
+        <div class="row"><span class="k">НДС ${rate}%</span><span class="v">${formatMoneyShort(fromKopecks(vatKop))}</span></div>
+        <div class="row total"><span class="k">Итого</span><span class="v">${formatMoneyShort(fromKopecks(resultKop))}</span></div>
+    `;
+}
+
+// Скидка
+function calcDiscount() {
+    const price = parseMoneyInput(document.getElementById('discPrice').value);
+    const percent = parseMoneyInput(document.getElementById('discPercent').value);
+
+    if (isNaN(price) || price <= 0 || isNaN(percent) || percent < 0 || percent > 100) {
+        showToast('Ошибка', 'Введите корректные значения', 'error');
+        return;
+    }
+
+    const priceKop = toKopecks(price);
+    const discountKop = Math.round((priceKop * percent) / 100);
+    const finalKop = priceKop - discountKop;
+
+    const resultDiv = document.getElementById('discResult');
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = `
+        <div class="row"><span class="k">Исходная цена</span><span class="v">${formatMoneyShort(price)}</span></div>
+        <div class="row"><span class="k">Скидка ${percent}%</span><span class="v">− ${formatMoneyShort(fromKopecks(discountKop))}</span></div>
+        <div class="row total"><span class="k">Итого к оплате</span><span class="v">${formatMoneyShort(fromKopecks(finalKop))}</span></div>
+    `;
+}
+
+// Вклад
+function calcDeposit() {
+    const amount = parseMoneyInput(document.getElementById('depAmount').value);
+    const rate = parseMoneyInput(document.getElementById('depRate').value);
+    const term = parseInt(document.getElementById('depTerm').value, 10);
+
+    if (isNaN(amount) || amount <= 0 || isNaN(rate) || rate <= 0 || isNaN(term) || term <= 0) {
+        showToast('Ошибка', 'Введите корректные данные вклада', 'error');
+        return;
+    }
+
+    // Простые проценты (без капитализации)
+    const amountKop = toKopecks(amount);
+    const yearRate = rate / 100;
+    const interestKop = Math.round(amountKop * yearRate * (term / 12));
+    const totalKop = amountKop + interestKop;
+
+    const resultDiv = document.getElementById('depResult');
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = `
+        <div class="row"><span class="k">Сумма вклада</span><span class="v">${formatMoneyShort(amount)}</span></div>
+        <div class="row"><span class="k">Ставка</span><span class="v">${rate}% годовых</span></div>
+        <div class="row"><span class="k">Срок</span><span class="v">${term} мес</span></div>
+        <div class="row"><span class="k">Доход</span><span class="v">+ ${formatMoneyShort(fromKopecks(interestKop))}</span></div>
+        <div class="row total"><span class="k">К возврату</span><span class="v">${formatMoneyShort(fromKopecks(totalKop))}</span></div>
+    `;
+}
+
+// Аннуитет
+function calcAnnuity() {
+    const amount = parseMoneyInput(document.getElementById('annAmount').value);
+    const rate = parseMoneyInput(document.getElementById('annRate').value);
+    const term = parseInt(document.getElementById('annTerm').value, 10);
+
+    if (isNaN(amount) || amount <= 0 || isNaN(rate) || rate <= 0 || isNaN(term) || term <= 0) {
+        showToast('Ошибка', 'Введите корректные данные кредита', 'error');
+        return;
+    }
+
+    // Формула аннуитета: P = S * (i * (1+i)^n) / ((1+i)^n - 1)
+    // i — месячная ставка
+    const monthRate = rate / 100 / 12;
+    const pow = Math.pow(1 + monthRate, term);
+    const payment = amount * (monthRate * pow) / (pow - 1);
+
+    // Работаем через копейки для точности
+    const paymentKop = toKopecks(payment);
+    const totalKop = paymentKop * term;
+    const overpayKop = totalKop - toKopecks(amount);
+
+    const resultDiv = document.getElementById('annResult');
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = `
+        <div class="row"><span class="k">Сумма кредита</span><span class="v">${formatMoneyShort(amount)}</span></div>
+        <div class="row"><span class="k">Ставка</span><span class="v">${rate}% годовых</span></div>
+        <div class="row"><span class="k">Срок</span><span class="v">${term} мес</span></div>
+        <div class="row"><span class="k">Ежемесячный платеж</span><span class="v">${formatMoneyShort(fromKopecks(paymentKop))}</span></div>
+        <div class="row"><span class="k">Переплата</span><span class="v">${formatMoneyShort(fromKopecks(overpayKop))}</span></div>
+        <div class="row total"><span class="k">Общая выплата</span><span class="v">${formatMoneyShort(fromKopecks(totalKop))}</span></div>
+    `;
+}
+
+/* ============================================================
+   БЛОК Б: КЛАВИАТУРНЫЕ СОБЫТИЯ
+   ============================================================ */
+function initCalcKeyboard() {
+    document.addEventListener('keydown', (e) => {
+        // Только если активна вкладка калькулятора
+        if (!document.getElementById('panel-calc').classList.contains('active')) return;
+        // И не в поле ввода
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+
+        const key = e.key;
+        if (/^[0-9]$/.test(key)) {
+            handleCalcKey({ action: key, type: 'num' });
+            e.preventDefault();
+        } else if (key === '.' || key === ',') {
+            handleCalcKey({ action: '.', type: 'num' });
+            e.preventDefault();
+        } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+            handleCalcKey({ action: key, type: 'op' });
+            e.preventDefault();
+        } else if (key === 'Enter' || key === '=') {
+            handleCalcKey({ action: '=', type: 'eq' });
+            e.preventDefault();
+        } else if (key === 'Backspace') {
+            handleCalcKey({ action: 'BACK', type: 'fn' });
+            e.preventDefault();
+        } else if (key === 'Escape' || key.toLowerCase() === 'c') {
+            handleCalcKey({ action: 'C', type: 'clear' });
+            e.preventDefault();
+        } else if (key === '%') {
+            handleCalcKey({ action: '%', type: 'fn' });
+            e.preventDefault();
+        }
+    });
+}
+
+/* ============================================================
+   БЛОК В: ПРЕСЕТЫ ЗАПРОСОВ
+   ============================================================ */
+const AI_PRESETS = [
+    {
+        title: 'Подсчет наличности',
+        desc: 'Помоги разложить сумму',
+        prompt: 'Как оптимально разложить сумму 87 450 рублей на минимальное количество банкнот и монет? Приведи расчет пошагово.',
+        icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg>'
+    },
+    {
+        title: 'Расчет НДС',
+        desc: 'Выделить или начислить',
+        prompt: 'Объясни, как правильно выделить НДС 20% из суммы 120 000 рублей, включенной в цену товара. Приведи формулу и пошаговый расчет.',
+        icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>'
+    },
+    {
+        title: 'Аннуитетный платеж',
+        desc: 'Расчет кредита',
+        prompt: 'Рассчитай ежемесячный аннуитетный платеж по кредиту 2 000 000 рублей под 16% годовых на 5 лет. Покажи формулу и итоговую переплату.',
+        icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>'
+    },
+    {
+        title: 'Проценты по вкладу',
+        desc: 'Доходность депозита',
+        prompt: 'Какой доход принесет вклад 500 000 рублей под 18% годовых за 24 месяца без капитализации? Приведи расчет.',
+        icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>'
+    },
+    {
+        title: 'Курсовые расчеты',
+        desc: 'Конвертация валют',
+        prompt: 'Как правильно рассчитать стоимость покупки 1000 долларов США по курсу 92,50 рублей за доллар с учетом комиссии банка 1%?',
+        icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/></svg>'
+    },
+    {
+        title: 'Сложные проценты',
+        desc: 'Капитализация',
+        prompt: 'Объясни разницу между простыми и сложными процентами на примере вклада 100 000 рублей под 15% годовых с ежемесячной капитализацией на 3 года.',
+        icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 12h16M12 4v16"/></svg>'
+    }
+];
+
+function renderPresets() {
+    const list = document.getElementById('presetsList');
+    list.innerHTML = '';
+
+    AI_PRESETS.forEach(preset => {
+        const div = document.createElement('div');
+        div.className = 'ai-preset';
+        div.innerHTML = `
+            <div class="ai-preset-icon">${preset.icon}</div>
+            <div class="ai-preset-text">
+                <span class="t1">${preset.title}</span>
+                <span class="t2">${preset.desc}</span>
+            </div>
+        `;
+        div.addEventListener('click', () => {
+            document.getElementById('aiInput').value = preset.prompt;
+            document.getElementById('aiInput').focus();
+            autoResizeTextarea(document.getElementById('aiInput'));
+        });
+        list.appendChild(div);
+    });
+}
+
+/* ============================================================
+   БЛОК В: РЕНДЕРИНГ СООБЩЕНИЙ И ПАРСИНГ ОТВЕТОВ
+   ============================================================ */
+function addMessage(role, content, isStreaming = false) {
+    const container = document.getElementById('aiMessages');
+    const msg = document.createElement('div');
+    msg.className = 'ai-msg ' + role;
+
+    const avatarSvg = role === 'user'
+        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>';
+
+    msg.innerHTML = `
+        <div class="ai-avatar">${avatarSvg}</div>
+        <div class="ai-bubble"></div>
+    `;
+
+    const bubble = msg.querySelector('.ai-bubble');
+    if (isStreaming) {
+        bubble.innerHTML = '<div class="ai-typing"><span></span><span></span><span></span></div>';
+    } else {
+        bubble.innerHTML = renderMarkdown(content);
+    }
+
+    container.appendChild(msg);
+    container.scrollTop = container.scrollHeight;
+
+    return bubble;
+}
+
+function renderMarkdown(text) {
+    if (!text) return '';
+
+    if (typeof marked !== 'undefined' && marked.parse) {
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: false,
+            mangle: false
+        });
+
+        let html = marked.parse(text);
+
+        // KaTeX
+        if (typeof katex !== 'undefined') {
+            html = html.replace(/\$\$([\s\S]+?)\$\$/g, (match, formula) => {
+                try {
+                    return katex.renderToString(formula.trim(), { displayMode: true, throwOnError: false });
+                } catch (e) {
+                    return `<code>${formula}</code>`;
+                }
+            });
+            html = html.replace(/\$([^\$\n]+?)\$/g, (match, formula) => {
+                try {
+                    return katex.renderToString(formula.trim(), { displayMode: false, throwOnError: false });
+                } catch (e) {
+                    return `<code>${formula}</code>`;
+                }
+            });
+        }
+
+        // Убираем лишние <br> перед SVG
+        html = html.replace(/<br\s*\/?>\s*<svg/g, '<svg');
+        html = html.replace(/<p>\s*<svg/g, '<p><svg');
+
+        // Добавляем класс inline-icon
+        html = html.replace(/<svg([^>]*)>/g, (match, attrs) => {
+            if (attrs.includes('class=')) return match;
+            return match.replace('<svg', '<svg class="inline-icon"');
+        });
+
+        return html;
+    }
+
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\n/g, '<br>');
+}
+
+/* ============================================================
+   БЛОК В: ОТПРАВКА ЗАПРОСОВ К ИИ
+   ============================================================ */
+async function sendAiMessage(userText) {
+    if (!userText.trim()) return;
+    if (STATE.isAiResponding) return;
+
+    if (STATE.apiKeyStatus !== 'ready') {
+        showToast('Система недоступна', 'Интеллектуальный ассистент еще не инициализирован или произошла ошибка подключения', 'error');
+        return;
+    }
+
+    // Добавляем сообщение пользователя
+    addMessage('user', userText);
+    STATE.chatHistory.push({ role: 'user', content: userText });
+
+    // Очищаем поле ввода
+    const input = document.getElementById('aiInput');
+    input.value = '';
+    autoResizeTextarea(input);
+
+    // Блокируем кнопку отправки
+    STATE.isAiResponding = true;
+    const sendBtn = document.getElementById('aiSend');
+    sendBtn.disabled = true;
+
+    // Создаем пузырь для ответа с индикатором печати
+    const assistantBubble = addMessage('assistant', '', true);
+
+    try {
+        const messages = [
+            { role: 'system', content: APP_CONFIG.SYSTEM_PROMPT },
+            ...STATE.chatHistory
+        ];
+
+        const response = await fetch(APP_CONFIG.CHAT_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + STATE.apiKey
+            },
+            body: JSON.stringify({
+                model: APP_CONFIG.MODEL,
+                messages: messages,
+                stream: true,
+                temperature: 0.7,
+                max_tokens: 2048
+            })
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error('HTTP ' + response.status + ': ' + errText.slice(0, 200));
+        }
+
+        // Читаем поток
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullContent = '';
+        let buffer = '';
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop(); // Оставляем неполную строку в буфере
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed || !trimmed.startsWith('data:')) continue;
+                const data = trimmed.slice(5).trim();
+                if (data === '[DONE]') continue;
+
+                try {
+                    const json = JSON.parse(data);
+                    const delta = json.choices?.[0]?.delta?.content;
+                    if (delta) {
+                        fullContent += delta;
+                        // Обновляем содержимое пузыря в реальном времени
+                        assistantBubble.innerHTML = renderMarkdown(fullContent);
+                        const container = document.getElementById('aiMessages');
+                        container.scrollTop = container.scrollHeight;
+                    }
+                } catch (e) {
+                    // Игнорируем ошибки парсинга отдельных чанков
+                }
+            }
+        }
+
+        // Финальный рендер
+        assistantBubble.innerHTML = renderMarkdown(fullContent);
+        STATE.chatHistory.push({ role: 'assistant', content: fullContent });
+
+    } catch (err) {
+        console.error('[AI] Request error:', err);
+        assistantBubble.innerHTML = `
+            <div style="color: var(--color-danger);">
+                <strong>Ошибка соединения с системным ИИ</strong><br>
+                <span style="color: var(--color-muted); font-size: 12px;">${err.message}</span>
+            </div>
+        `;
+        showToast('Ошибка ИИ', 'Не удалось получить ответ от ассистента', 'error');
+    } finally {
+        STATE.isAiResponding = false;
+        sendBtn.disabled = false;
+        const container = document.getElementById('aiMessages');
+        container.scrollTop = container.scrollHeight;
+    }
+}
+
+function clearChat() {
+    STATE.chatHistory = [];
+    const container = document.getElementById('aiMessages');
+    container.innerHTML = '';
+    addWelcomeMessage();
+    showToast('Диалог очищен', 'История сообщений удалена', 'success');
+}
+
+function exportChat() {
+    if (STATE.chatHistory.length === 0) {
+        showToast('Нет сообщений', 'Диалог пуст для экспорта', 'error');
+        return;
+    }
+
+    let text = '=== ДИАЛОГ С ИНТЕЛЛЕКТУАЛЬНЫМ АССИСТЕНТОМ ===\n';
+    text += 'Дата: ' + new Date().toLocaleString('ru-RU') + '\n\n';
+
+    STATE.chatHistory.forEach(msg => {
+        const role = msg.role === 'user' ? 'ПОЛЬЗОВАТЕЛЬ' : 'АССИСТЕНТ';
+        text += `[${role}]\n${msg.content}\n\n---\n\n`;
+    });
+
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ai-chat-' + Date.now() + '.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+
+    showToast('Экспорт', 'Диалог сохранен в файл', 'success');
+}
+
+function addWelcomeMessage() {
+    const welcome = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg> Привет. Я — интеллектуальный финансовый ассистент.
+
+Готов помочь с расчетами в российских рублях, анализом наличности, выделением НДС, расчетами кредитов и вкладов.
+
+**Чем я могу быть полезен:**
+
+- Разложение сумм на номиналы банкнот и монет
+- Расчет НДС 20% и 10% (выделение и начисление)
+- Аннуитетные и дифференцированные платежи
+- Проценты по вкладам с капитализацией
+- Конвертация валют и расчет комиссий
+
+Задайте вопрос или выберите готовый сценарий в левой панели.`;
+
+    addMessage('assistant', welcome);
+}
+
+/* ============================================================
+   БЛОК В: АВТО-RESIZE TEXTAREA
+   ============================================================ */
+function autoResizeTextarea(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
+}
+
+/* ============================================================
+   ЧАСЫ В ШАПКЕ
+   ============================================================ */
+function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById('clockDisplay').textContent = `${h}:${m}:${s}`;
+}
+
+/* ============================================================
+   ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
+   ============================================================ */
+function initApp() {
+    // Вкладки
+    initTabs();
+
+    // Блок А: рендер таблиц
+    renderDenominationTable(COINS, 'coinsTableBody', 'coin');
+    renderDenominationTable(NOTES, 'notesTableBody', 'note');
+    updateTotalSummary();
+
+    // Блок А: обработчики кнопок
+    document.getElementById('btnClearAll').addEventListener('click', clearAllQuantities);
+    document.getElementById('btnCopyTotal').addEventListener('click', copyTotalToClipboard);
+    document.getElementById('btnDecompose').addEventListener('click', onDecomposeClick);
+    document.getElementById('btnConvert').addEventListener('click', onConvertClick);
+    document.getElementById('btnUseTotal').addEventListener('click', onUseTotalClick);
+
+    // Блок Б: калькулятор
+    renderCalcPad();
+    updateCalcDisplay();
+    initCalcKeyboard();
+
+    // Блок Б: финансовые функции
+    document.getElementById('btnCalcVat').addEventListener('click', calcVat);
+    document.getElementById('btnCalcDisc').addEventListener('click', calcDiscount);
+    document.getElementById('btnCalcDep').addEventListener('click', calcDeposit);
+    document.getElementById('btnCalcAnn').addEventListener('click', calcAnnuity);
+
+    // Enter в полях фин. функций
+    ['vatAmount', 'discPrice', 'discPercent', 'depAmount', 'depRate', 'depTerm', 'annAmount', 'annRate', 'annTerm'].forEach(id => {
+        document.getElementById(id).addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const btnId = id.startsWith('vat') ? 'btnCalcVat'
+                    : id.startsWith('disc') ? 'btnCalcDisc'
+                    : id.startsWith('dep') ? 'btnCalcDep'
+                    : 'btnCalcAnn';
+                document.getElementById(btnId).click();
+            }
+        });
+    });
+
+    // Enter в конвертере
+    document.getElementById('converterInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            onConvertClick();
+        }
+    });
+
+    // Блок В: пресеты
+    renderPresets();
+
+    // Блок В: чат
+    addWelcomeMessage();
+
+    const aiInput = document.getElementById('aiInput');
+    aiInput.addEventListener('input', () => autoResizeTextarea(aiInput));
+    aiInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendAiMessage(aiInput.value);
+        }
+    });
+
+    document.getElementById('aiSend').addEventListener('click', () => {
+        sendAiMessage(aiInput.value);
+    });
+
+    document.getElementById('btnClearChat').addEventListener('click', clearChat);
+    document.getElementById('btnExportChat').addEventListener('click', exportChat);
+
+    // Часы
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // Загрузка API ключа
+    loadApiKey();
+
+    console.log('[APP] Инициализация завершена. Модулей: 3. Статус ИИ: загрузка...');
+}
+
+// Запуск после загрузки DOM
+document.addEventListener('DOMContentLoaded', initApp);
+</script>
+</body>
+</html>
