@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memorize Pro</title>
+    <style>
+        :root {
+            --bg-primary: #f5f5f7;
+            --bg-secondary: #e8e8ed;
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(255, 255, 255, 0.4);
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent-primary: #1d1d1f;
+            --accent-hover: #000000;
+            --accent-danger: #ff3b30;
+            --accent-danger-hover: #ff2d20;
+            --accent-success: #34c759;
+            --accent-success-bg: rgba(52, 199, 89, 0.12);
+            --accent-warning: #ff9500;
+            --accent-warning-bg: rgba(255, 149, 0, 0.12);
+            --accent-info: #007aff;
+            --accent-info-bg: rgba(0, 122, 255, 0.12);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --transition-fast: 0.15s ease;
+            --transition-base: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            color: var(--text-primary);
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-md);
+            padding: 40px;
+            transition: all var(--transition-base);
+        }
+
+        .glass-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 32px;
+        }
+
+        .header-content h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.8px;
+            margin-bottom: 8px;
+        }
+
+        .header-content .subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background: rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 240px;
+            padding: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.6);
+            font-family: inherit;
+            font-size: 17px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            resize: vertical;
+            transition: all var(--transition-base);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 4px rgba(29, 29, 31, 0.05);
+        }
+
+        textarea::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: var(--radius-md);
+            background: var(--accent-primary);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: var(--text-secondary);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-danger {
+            background: var(--accent-danger);
+        }
+
+        .btn-danger:hover {
+            background: var(--accent-danger-hover);
+        }
+
+        .btn-success {
+            background: var(--accent-success);
+        }
+
+        .practice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .mic-icon {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-secondary);
+            transition: all var(--transition-base);
+        }
+
+        .mic-icon.active {
+            fill: var(--accent-success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.05); }
+        }
+
+        .stats-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .text-display {
+            display: none;
+            line-height: 2.4;
+            font-size: 20px;
+            color: var(--text-primary);
+            margin-bottom: 32px;
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+.word {
+            display: inline-block;
+            margin: 4px 2px;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-base);
+            color: transparent; /* Текст скрыт по умолчанию */
+            background: rgba(0, 0, 0, 0.06);
+            position: relative;
+            cursor: default;
+            min-width: 24px; /* Гарантирует видимый блок даже для букв "а", "о" */
+            text-align: center;
+        }
+
+        .word.visible {
+            color: var(--text-primary);
+            background: transparent;
+        }
+
+        .word.correct {
+            color: var(--accent-success) !important;
+            background: var(--accent-success-bg);
+            font-weight: 600;
+        }
+
+        .word.synonym {
+            color: var(--accent-warning) !important;
+            background: var(--accent-warning-bg);
+            font-weight: 600;
+        }
+
+        .word.current {
+            background: var(--accent-info-bg);
+            box-shadow: 0 0 0 2px var(--accent-info);
+            color: transparent !important; /* Текст остается невидимым */
+            transform: scale(1.05);
+        }
+
+        .word.error {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+            background: rgba(255, 59, 48, 0.15);
+            color: transparent !important; /* Текст не раскрывается при ошибке */
+            box-shadow: 0 0 0 2px var(--accent-danger);
+        }
+
+        .word.hint-revealed {
+            color: var(--text-secondary) !important;
+            background: rgba(134, 134, 139, 0.1);
+            font-style: italic;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .control-btn {
+            padding: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.6);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 0, 0, 0.15);
+        }
+
+        .control-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-base);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            transform: scale(0.95);
+            transition: transform var(--transition-base);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-close svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-item {
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: var(--radius-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .history-item:hover {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .history-item-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 300px;
+        }
+
+        .history-item-meta {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .settings-group {
+            margin-bottom: 24px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .setting-info p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .toggle {
+            position: relative;
+            width: 52px;
+            height: 32px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .toggle.active {
+            background: var(--accent-success);
+        }
+
+        .toggle-handle {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: transform var(--transition-fast);
+        }
+
+        .toggle.active .toggle-handle {
+            transform: translateX(20px);
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            background: var(--text-primary);
+            color: white;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all var(--transition-base);
+            z-index: 2000;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 2px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-primary);
+            border-radius: 2px;
+            transition: width var(--transition-slow);
+        }
+
+        @media (max-width: 640px) {
+            .glass-card {
+                padding: 24px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 16px;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .text-display {
+                font-size: 18px;
+                line-height: 2.2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="glass-card" id="input-section">
+            <div class="header">
+                <div class="header-content">
+                    <h1>Memorize Pro</h1>
+                    <p class="subtitle">Интеллектуальная система заучивания текстов с распознаванием речи и AI-анализом синонимов</p>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn" id="btn-history" title="История">
+                        <svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+                    </button>
+                    <button class="icon-btn" id="btn-settings" title="Настройки">
+                        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L3.16 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Текст для заучивания</label>
+                <textarea id="text-input" placeholder="Вставьте стихотворение, прозу или любой текст для тренировки..."></textarea>
+            </div>
+
+            <button class="btn" id="start-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                Начать тренировку
+            </button>
+        </div>
+
+        <div class="glass-card hidden" id="practice-section">
+            <div class="practice-header">
+                <div class="status-bar">
+                    <div class="status-indicator">
+                        <svg class="mic-icon" id="mic-icon" viewBox="0 0 24 24">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                        <span id="status-text">Ожидание...</span>
+                    </div>
+                </div>
+                <div class="stats-pill">
+                    <span id="progress-text">0 / 0</span>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+
+            <div class="text-display" id="text-display"></div>
+
+            <div class="controls">
+                <button class="control-btn" id="btn-hint">
+                    <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6A4.997 4.997 0 0 1 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/></svg>
+                    Подсказка
+                </button>
+                <button class="control-btn btn-secondary" id="btn-pause">
+                    <svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    Пауза
+                </button>
+                <button class="control-btn btn-secondary" id="btn-restart">
+                    <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+                    Заново
+                </button>
+                <button class="control-btn btn-danger" id="btn-stop">
+                    <svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+                    Завершить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="stats-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Результаты сессии</h2>
+                <button class="modal-close" onclick="closeModal('stats-modal')">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-accuracy">0%</div>
+                    <div class="stat-label">Точность</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-time">0:00</div>
+                    <div class="stat-label">Время</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-exact">0</div>
+                    <div class="stat-label">Точных совпадений</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-synonyms">0</div>
+                    <div class="stat-label">Синонимов принято</div>
+                </div>
+            </div>
+            <button class="btn" onclick="closeModal('stats-modal'); resetApp();">Новая тренировка</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="history-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">История текстов</h2>
+                <button class="modal-close" onclick="closeModal('history-modal')">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="history-list" id="history-list">
+                <p style="text-align: center; color: var(--text-secondary); padding: 20px;">История пуста</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Настройки</h2>
+                <button class="modal-close" onclick="closeModal('settings-modal')">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="settings-group">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Игнорировать пунктуацию</h4>
+                        <p>Не требовать произнесения запятых и точек</p>
+                    </div>
+                    <div class="toggle active" id="toggle-punctuation" onclick="toggleSetting(this)">
+                        <div class="toggle-handle"></div>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Авто-подсказка</h4>
+                        <p>Показывать слово через 10 секунд бездействия</p>
+                    </div>
+                    <div class="toggle" id="toggle-autohint" onclick="toggleSetting(this)">
+                        <div class="toggle-handle"></div>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Строгий режим</h4>
+                        <p>Отключить проверку синонимов через AI</p>
+                    </div>
+                    <div class="toggle" id="toggle-strict" onclick="toggleSetting(this)">
+                        <div class="toggle-handle"></div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-secondary" onclick="exportData()">Экспорт данных</button>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // ==========================================
+        // STATE MANAGEMENT
+        // ==========================================
+        const AppState = {
+            apiKey: null,
+            words: [],
+            currentIndex: 0,
+            isListening: false,
+            isPaused: false,
+            recognition: null,
+            errorCount: {},
+            hintTimeout: null,
+            startTime: null,
+            stats: {
+                exact: 0,
+                synonyms: 0,
+                errors: 0,
+                hints: 0
+            },
+            settings: {
+                ignorePunctuation: true,
+                autoHint: false,
+                strictMode: false
+            }
+        };
+
+        // ==========================================
+        // STORAGE MANAGER
+        // ==========================================
+        const StorageManager = {
+            saveText: function(text, stats) {
+                const history = JSON.parse(localStorage.getItem('memorize_history') || '[]');
+                const item = {
+                    id: Date.now(),
+                    text: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
+                    fullText: text,
+                    date: new Date().toLocaleString('ru-RU'),
+                    stats: stats
+                };
+                history.unshift(item);
+                if (history.length > 20) history.pop();
+                localStorage.setItem('memorize_history', JSON.stringify(history));
+            },
+            
+            getHistory: function() {
+                return JSON.parse(localStorage.getItem('memorize_history') || '[]');
+            },
+            
+            loadSettings: function() {
+                const saved = localStorage.getItem('memorize_settings');
+                if (saved) {
+                    AppState.settings = { ...AppState.settings, ...JSON.parse(saved) };
+                    this.applySettingsToUI();
+                }
+            },
+            
+            saveSettings: function() {
+                localStorage.setItem('memorize_settings', JSON.stringify(AppState.settings));
+            },
+            
+            applySettingsToUI: function() {
+                const el1 = document.getElementById('toggle-punctuation');
+                if (el1) el1.classList.toggle('active', AppState.settings.ignorePunctuation);
+                
+                const el2 = document.getElementById('toggle-autohint');
+                if (el2) el2.classList.toggle('active', AppState.settings.autoHint);
+                
+                const el3 = document.getElementById('toggle-strict');
+                if (el3) el3.classList.toggle('active', AppState.settings.strictMode);
+            }
+        };
+        // ==========================================
+        // API MANAGER
+        // ==========================================
+        const APIManager = {
+            loadKey: async function() {
+                try {
+                    const response = await fetch('https://oris-flax.vercel.app/~/secret/api-keys/mistral.txt');
+                    if (response.ok) {
+                        AppState.apiKey = await response.text();
+                        console.log('API key loaded successfully');
+                    }
+                } catch (error) {
+                    console.error('Failed to load API key:', error);
+                }
+            },
+            
+            checkSynonym: async function(target, spoken) {
+                if (!AppState.apiKey || AppState.settings.strictMode) return false;
+                
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+                    
+                    const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${AppState.apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: 'mistral-tiny',
+                            messages: [
+                                {
+                                    role: 'system',
+                                    content: 'Отвечай ТОЛЬКО JSON: {"result": "orange"} если слова синонимы или близки по смыслу в данном контексте, или {"result": "red"} если разные. Никакого другого текста.'
+                                },
+                                {
+                                    role: 'user',
+                                    content: `Слово 1: "${target}"\nСлово 2: "${spoken}"`
+                                }
+                            ],
+                            temperature: 0.1
+                        }),
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    const data = await response.json();
+                    const content = data.choices?.[0]?.message?.content?.trim() || '{}';
+                    const result = JSON.parse(content);
+                    return result.result === 'orange';
+                } catch (error) {
+                    console.error('Synonym check failed:', error);
+                    return false;
+                }
+            }
+        };
+
+        // ==========================================
+        // SPEECH MANAGER
+        // ==========================================
+        const SpeechManager = {
+            init: function() {
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                    showNotification('Распознавание речи не поддерживается в этом браузере');
+                    return false;
+                }
+                
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                AppState.recognition = new SpeechRecognition();
+                AppState.recognition.continuous = true;
+                AppState.recognition.interimResults = false;
+                AppState.recognition.lang = 'ru-RU';
+                AppState.recognition.maxAlternatives = 3;
+                
+                AppState.recognition.onstart = () => {
+                    AppState.isListening = true;
+                    document.getElementById('mic-icon').classList.add('active');
+                    document.getElementById('status-text').textContent = 'Слушаю...';
+                };
+                
+                AppState.recognition.onresult = (event) => {
+                    if (AppState.isPaused) return;
+                    
+                    const last = event.results.length - 1;
+                    const transcript = event.results[last][0].transcript.trim();
+                    const alternatives = [];
+                    for (let i = 0; i < event.results[last].length; i++) {
+                        alternatives.push(event.results[last][i].transcript.trim());
+                    }
+                    
+                    this.processInput(alternatives);
+                };
+                
+                AppState.recognition.onerror = (event) => {
+                    console.error('Speech error:', event.error);
+                    if (event.error === 'no-speech') {
+                        this.restart();
+                    } else if (event.error === 'network') {
+                        document.getElementById('status-text').textContent = 'Ошибка сети';
+                    }
+                };
+                
+                AppState.recognition.onend = () => {
+                    if (AppState.isListening && !AppState.isPaused && AppState.currentIndex < AppState.words.length) {
+                        this.restart();
+                    } else {
+                        AppState.isListening = false;
+                        document.getElementById('mic-icon').classList.remove('active');
+                    }
+                };
+                
+                return true;
+            },
+            
+            start: function() {
+                if (AppState.recognition) {
+                    try {
+                        AppState.recognition.start();
+                    } catch (e) {
+                        console.log('Recognition already running');
+                    }
+                }
+            },
+            
+            stop: function() {
+                AppState.isListening = false;
+                if (AppState.recognition) {
+                    AppState.recognition.stop();
+                }
+            },
+            
+            restart: function() {
+                setTimeout(() => {
+                    if (AppState.isListening && !AppState.isPaused) {
+                        try {
+                            AppState.recognition.start();
+                        } catch (e) {}
+                    }
+                }, 100);
+            },
+            
+            processInput: function(alternatives) {
+                if (AppState.currentIndex >= AppState.words.length) return;
+                
+                const targetWord = this.cleanWord(AppState.words[AppState.currentIndex]);
+                let matchFound = false;
+                
+                for (const alt of alternatives) {
+                    const spokenWords = alt.split(/\s+/);
+                    
+                    for (const spoken of spokenWords) {
+                        const spokenClean = this.cleanWord(spoken);
+                        if (!spokenClean) continue;
+                        
+                        if (spokenClean === targetWord) {
+                            this.handleMatch('exact');
+                            matchFound = true;
+                            break;
+                        }
+                    }
+                    if (matchFound) break;
+                }
+                
+                if (!matchFound && !AppState.settings.strictMode) {
+                    this.checkAlternativesForSynonyms(alternatives, targetWord);
+                } else if (!matchFound) {
+                    this.handleError();
+                }
+            },
+            
+            checkAlternativesForSynonyms: async function(alternatives, targetWord) {
+                for (const alt of alternatives) {
+                    const spokenWords = alt.split(/\s+/);
+                    for (const spoken of spokenWords) {
+                        const spokenClean = this.cleanWord(spoken);
+                        if (!spokenClean) continue;
+                        
+                        const isSyn = await APIManager.checkSynonym(targetWord, spokenClean);
+                        if (isSyn) {
+                            this.handleMatch('synonym');
+                            return;
+                        }
+                    }
+                }
+                this.handleError();
+            },
+            
+            cleanWord: function(word) {
+                if (AppState.settings.ignorePunctuation) {
+                    return word.toLowerCase().replace(/[^\wа-яё]/gi, '');
+                }
+                return word.toLowerCase();
+            },
+            
+            handleMatch: function(type) {
+                UIManager.revealWord(AppState.currentIndex, type);
+                AppState.currentIndex++;
+                AppState.errorCount[AppState.currentIndex - 1] = 0;
+                AppState.stats[type === 'exact' ? 'exact' : 'synonyms']++;
+                UIManager.updateProgress();
+                UIManager.highlightCurrentWord();
+                this.resetHintTimer();
+                
+                if (AppState.currentIndex >= AppState.words.length) {
+                    this.completeSession();
+                }
+            },
+            
+            handleError: function() {
+                const idx = AppState.currentIndex;
+                if (!AppState.errorCount[idx]) AppState.errorCount[idx] = 0;
+                AppState.errorCount[idx]++;
+                AppState.stats.errors++;
+                
+                UIManager.showError(idx);
+                
+                if (AppState.errorCount[idx] >= 3) {
+                    setTimeout(() => {
+                        UIManager.revealWord(idx, 'error');
+                        AppState.currentIndex++;
+                        UIManager.updateProgress();
+                        UIManager.highlightCurrentWord();
+                        AppState.errorCount[idx] = 0;
+                        this.resetHintTimer();
+                        
+                        if (AppState.currentIndex >= AppState.words.length) {
+                            this.completeSession();
+                        }
+                    }, 500);
+                } else {
+                    this.resetHintTimer();
+                }
+            },
+            
+            resetHintTimer: function() {
+                if (AppState.hintTimeout) {
+                    clearTimeout(AppState.hintTimeout);
+                }
+                if (AppState.settings.autoHint && AppState.currentIndex < AppState.words.length) {
+                    AppState.hintTimeout = setTimeout(() => {
+                        UIManager.revealWord(AppState.currentIndex, 'hint');
+                        AppState.stats.hints++;
+                        AppState.currentIndex++;
+                        UIManager.updateProgress();
+                        UIManager.highlightCurrentWord();
+                    }, 10000);
+                }
+            },
+            
+            completeSession: function() {
+                this.stop();
+                document.getElementById('status-text').textContent = 'Завершено';
+                const duration = Math.floor((Date.now() - AppState.startTime) / 1000);
+                const minutes = Math.floor(duration / 60);
+                const seconds = duration % 60;
+                
+                const total = AppState.words.length;
+                const accuracy = Math.round(((AppState.stats.exact + AppState.stats.synonyms) / total) * 100);
+                
+                document.getElementById('stat-accuracy').textContent = accuracy + '%';
+                document.getElementById('stat-time').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                document.getElementById('stat-exact').textContent = AppState.stats.exact;
+                document.getElementById('stat-synonyms').textContent = AppState.stats.synonyms;
+                
+                StorageManager.saveText(document.getElementById('text-input').value, {
+                    accuracy,
+                    duration,
+                    ...AppState.stats
+                });
+                
+                setTimeout(() => {
+                    openModal('stats-modal');
+                }, 500);
+            }
+        };
+
+        // ==========================================
+        // UI MANAGER
+        // ==========================================
+        const UIManager = {
+            init: function() {
+                const startBtn = document.getElementById('start-btn');
+                if (startBtn) startBtn.addEventListener('click', () => this.startSession());
+
+                const stopBtn = document.getElementById('stop-btn');
+                if (stopBtn) stopBtn.addEventListener('click', () => this.stopSession());
+
+                const pauseBtn = document.getElementById('btn-pause');
+                if (pauseBtn) pauseBtn.addEventListener('click', () => this.togglePause());
+
+                const restartBtn = document.getElementById('btn-restart');
+                if (restartBtn) restartBtn.addEventListener('click', () => this.restartSession());
+
+                const hintBtn = document.getElementById('btn-hint');
+                if (hintBtn) hintBtn.addEventListener('click', () => this.giveHint());
+
+                const historyBtn = document.getElementById('btn-history');
+                if (historyBtn) historyBtn.addEventListener('click', () => this.showHistory());
+
+                const settingsBtn = document.getElementById('btn-settings');
+                if (settingsBtn) settingsBtn.addEventListener('click', () => openModal('settings-modal'));
+
+                const overlays = document.querySelectorAll('.modal-overlay');
+                overlays.forEach(overlay => {
+                    overlay.addEventListener('click', (e) => {
+                        if (e.target === overlay) {
+                            overlay.classList.remove('active');
+                        }
+                    });
+                });
+            },
+            
+            startSession: function() {
+                const textInput = document.getElementById('text-input');
+                const text = textInput ? textInput.value.trim() : '';
+                if (!text) {
+                    showNotification('Введите текст для заучивания');
+                    return;
+                }
+                
+                if (!SpeechManager.init()) return;
+                
+                AppState.words = text.split(/\s+/).filter(w => w.length > 0);
+                AppState.currentIndex = 0;
+                AppState.errorCount = {};
+                AppState.stats = { exact: 0, synonyms: 0, errors: 0, hints: 0 };
+                AppState.startTime = Date.now();
+                AppState.isPaused = false;
+                
+                const textDisplay = document.getElementById('text-display');
+                if (textDisplay) {
+                    textDisplay.innerHTML = '';
+                    AppState.words.forEach((word, index) => {
+                        const span = document.createElement('span');
+                        span.className = 'word';
+                        span.textContent = word;
+                        span.dataset.index = index;
+                        textDisplay.appendChild(span);
+                    });
+                    textDisplay.style.display = 'block';
+                }
+                
+                const inputSection = document.getElementById('input-section');
+                if (inputSection) inputSection.classList.add('hidden');
+                
+                const practiceSection = document.getElementById('practice-section');
+                if (practiceSection) practiceSection.classList.remove('hidden');
+                
+                const statusBar = document.getElementById('status-bar');
+                if (statusBar) statusBar.style.display = 'flex';
+                
+                this.updateProgress();
+                this.highlightCurrentWord();
+                SpeechManager.start();
+            },
+            
+            stopSession: function() {
+                SpeechManager.stop();
+                const practiceSection = document.getElementById('practice-section');
+                if (practiceSection) practiceSection.classList.add('hidden');
+                
+                const inputSection = document.getElementById('input-section');
+                if (inputSection) inputSection.classList.remove('hidden');
+                
+                const textInput = document.getElementById('text-input');
+                if (textInput) textInput.value = '';
+            },
+            
+            togglePause: function() {
+                AppState.isPaused = !AppState.isPaused;
+                const btn = document.getElementById('btn-pause');
+                const statusText = document.getElementById('status-text');
+                
+                if (AppState.isPaused) {
+                    SpeechManager.stop();
+                    if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Продолжить';
+                    if (statusText) statusText.textContent = 'Пауза';
+                } else {
+                    SpeechManager.start();
+                    if (btn) btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> Пауза';
+                    if (statusText) statusText.textContent = 'Слушаю...';
+                }
+            },
+            
+            restartSession: function() {
+                SpeechManager.stop();
+                AppState.currentIndex = 0;
+                AppState.errorCount = {};
+                AppState.stats = { exact: 0, synonyms: 0, errors: 0, hints: 0 };
+                AppState.startTime = Date.now();
+                
+                document.querySelectorAll('.word').forEach(el => {
+                    el.className = 'word';
+                });
+                
+                this.updateProgress();
+                this.highlightCurrentWord();
+                SpeechManager.start();
+            },
+            
+            giveHint: function() {
+                if (AppState.currentIndex < AppState.words.length) {
+                    this.revealWord(AppState.currentIndex, 'hint');
+                    AppState.stats.hints++;
+                    AppState.currentIndex++;
+                    this.updateProgress();
+                    this.highlightCurrentWord();
+                    SpeechManager.resetHintTimer();
+                }
+            },
+            
+            updateProgress: function() {
+                const current = AppState.currentIndex;
+                const total = AppState.words.length;
+                
+                const progressText = document.getElementById('progress-text');
+                if (progressText) progressText.textContent = `${current} / ${total}`;
+                
+                const progressFill = document.getElementById('progress-fill');
+                if (progressFill) {
+                    const percentage = total > 0 ? (current / total) * 100 : 0;
+                    progressFill.style.width = percentage + '%';
+                }
+            },
+            
+            highlightCurrentWord: function() {
+                document.querySelectorAll('.word').forEach(el => {
+                    el.classList.remove('current');
+                });
+                
+                if (AppState.currentIndex < AppState.words.length) {
+                    const currentWord = document.querySelector(`[data-index="${AppState.currentIndex}"]`);
+                    if (currentWord) {
+                        currentWord.classList.add('current');
+                        currentWord.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            },
+            
+            revealWord: function(index, type) {
+                const wordEl = document.querySelector(`[data-index="${index}"]`);
+                if (wordEl) {
+                    wordEl.classList.add('visible');
+                    wordEl.classList.remove('current');
+                    
+                    if (type === 'exact') {
+                        wordEl.classList.add('correct');
+                    } else if (type === 'synonym') {
+                        wordEl.classList.add('synonym');
+                    } else if (type === 'error') {
+                        wordEl.style.color = 'var(--accent-danger)';
+                        wordEl.style.background = 'rgba(255, 59, 48, 0.1)';
+                    } else if (type === 'hint') {
+                        wordEl.classList.add('hint-revealed');
+                    }
+                }
+            },
+            
+            showError: function(index) {
+                const wordEl = document.querySelector(`[data-index="${index}"]`);
+                if (wordEl) {
+                    wordEl.classList.add('error');
+                    setTimeout(() => {
+                        if (wordEl) wordEl.classList.remove('error');
+                    }, 400);
+                }
+            },
+            
+            showHistory: function() {
+                const history = StorageManager.getHistory();
+                const list = document.getElementById('history-list');
+                
+                if (!list) return;
+                
+                if (history.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">История пуста</p>';
+                } else {
+                    list.innerHTML = history.map(item => `
+                        <div class="history-item" onclick="loadFromHistory('${item.id}')">
+                            <div class="history-item-info">
+                                <h4>${item.text}</h4>
+                                <div class="history-item-meta">${item.date} • Точность: ${item.stats.accuracy}%</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                openModal('history-modal');
+            }
+        };
+
+        // ==========================================
+        // GLOBAL FUNCTIONS
+        // ==========================================
+                function openModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.remove('active');
+        }
+
+        function toggleSetting(element) {
+            if (!element) return;
+            element.classList.toggle('active');
+            const settingId = element.id.replace('toggle-', '');
+            if (AppState.settings.hasOwnProperty(settingId)) {
+                AppState.settings[settingId] = element.classList.contains('active');
+                StorageManager.saveSettings();
+            }
+        }
+
+        function showNotification(message) {
+            const notif = document.getElementById('notification');
+            if (notif) {
+                notif.textContent = message;
+                notif.classList.add('show');
+                setTimeout(() => {
+                    notif.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        function loadFromHistory(id) {
+            const history = StorageManager.getHistory();
+            const item = history.find(h => h.id == id);
+            if (item) {
+                const textInput = document.getElementById('text-input');
+                if (textInput) textInput.value = item.fullText;
+                closeModal('history-modal');
+                showNotification('Текст загружен');
+            }
+        }
+
+        function resetApp() {
+            const practiceSection = document.getElementById('practice-section');
+            const inputSection = document.getElementById('input-section');
+            const textInput = document.getElementById('text-input');
+            
+            if (practiceSection) practiceSection.classList.add('hidden');
+            if (inputSection) inputSection.classList.remove('hidden');
+            if (textInput) textInput.value = '';
+        }
+
+        function exportData() {
+            const data = {
+                settings: AppState.settings,
+                history: StorageManager.getHistory(),
+                exportDate: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'memorize-data.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Данные экспортированы');
+        }
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            StorageManager.loadSettings();
+            APIManager.loadKey();
+            UIManager.init();
+            
+            // Close modals on overlay click
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
