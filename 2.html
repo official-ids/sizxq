@@ -1455,5 +1455,37 @@
             });
         });
     </script>
+    <div id="debug-panel" style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.9); color: white; padding: 10px; font-size: 12px; z-index: 9999; max-height: 150px; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span>DEBUG</span>
+        <button onclick="document.getElementById('debug-panel').style.display='none'" style="background: none; border: none; color: white; cursor: pointer;">✕</button>
+    </div>
+    <div id="debug-content"></div>
+</div>
+
+<script>
+function debug(msg) {
+    const div = document.getElementById('debug-content');
+    const line = document.createElement('div');
+    line.textContent = new Date().toLocaleTimeString() + ': ' + msg;
+    line.style.borderBottom = '1px solid #333';
+    line.style.padding = '2px 0';
+    div.insertBefore(line, div.firstChild);
+}
+
+// Перехватываем console.log
+const originalLog = console.log;
+console.log = function(...args) {
+    debug(args.join(' '));
+    originalLog.apply(console, args);
+};
+
+// Проверяем при старте
+setTimeout(() => {
+    debug('API Key: ' + (AppState.apiKey ? 'OK' : 'NOT LOADED'));
+    debug('Strict Mode: ' + AppState.settings.strictMode);
+    debug('Words count: ' + AppState.words.length);
+}, 2000);
+</script>
 </body>
 </html>
