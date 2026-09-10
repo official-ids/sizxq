@@ -18,6 +18,16 @@ const {
 
 const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN);
 
+let botInitPromise;
+
+function ensureBotInitialized() {
+  if (!botInitPromise) {
+    botInitPromise = bot.init();
+  }
+
+  return botInitPromise;
+}
+
 const MAX_FILE_SIZE_BYTES =
   Number(process.env.MAX_FILE_SIZE_MB || 50) * 1024 * 1024;
 
@@ -365,7 +375,9 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    await ensureBotInitialized();
     await bot.handleUpdate(req.body);
+
 
     res.status(200).json({
       ok: true,
