@@ -18,15 +18,19 @@ const {
 
 const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN);
 
-let botInitPromise;
+let botInitPromise = null;
 
 function ensureBotInitialized() {
   if (!botInitPromise) {
-    botInitPromise = bot.init();
+    botInitPromise = bot.init().catch((error) => {
+      botInitPromise = null;
+      throw error;
+    });
   }
 
   return botInitPromise;
 }
+
 
 const MAX_FILE_SIZE_BYTES =
   Number(process.env.MAX_FILE_SIZE_MB || 50) * 1024 * 1024;
@@ -34,6 +38,20 @@ const MAX_FILE_SIZE_BYTES =
 const FILE_DOWNLOAD_TIMEOUT_MS = Number(
   process.env.FILE_DOWNLOAD_TIMEOUT_MS || 45_000
 );
+
+function isMessageNotModifiedError(error) {
+  const message = String(
+    error?.description ||
+    error?.message ||
+    ""
+  ).toLowerCase();
+
+  return (
+    error?.error_code === 400 &&
+    message.includes("message is not modified")
+  );
+}
+
 
 function versionKey(version) {
   return crypto
@@ -143,24 +161,30 @@ async function sendGameFile(ctx, versionItem) {
   const fileUrl = versionItem.url;
 
   if (!isValidFileUrl(fileUrl)) {
-    throw new Error("Invalid file URL");
+    const error = new Error("Invalid file URL");
+    error.code = "INVALID_FILE_URL";
+    throw error;
   }
 
   const fileName = `UnderCur-${version}.ppsx`;
 
-  // Сначала пробуем передать Telegram прямую ссылку.
+  // Для Telegram URL передаётся строкой, а не через InputFile.
   try {
-    await ctx.replyWithDocument(new InputFile(fileUrl, fileName));
+    await ctx.replyWithDocument(fileUrl, {
+      filename: fileName,
+    });
+
     return;
   } catch (directUrlError) {
     console.error("Telegram failed to fetch file by URL:", {
       message: directUrlError.message,
       version,
+      url: fileUrl,
     });
   }
 
-  // Если Telegram не смог скачать файл самостоятельно,
-  // загружаем его через Vercel Function и передаём Buffer.
+  // Если Telegram не смог скачать URL самостоятельно,
+  // скачиваем файл через Vercel и отправляем Buffer.
   try {
     const buffer = await fetchFileBuffer(fileUrl);
 
@@ -178,22 +202,35 @@ async function sendGameFile(ctx, versionItem) {
 
     console.error("Failed to download/send file:", {
       message: bufferError.message,
+      stack: bufferError.stack,
       version,
+      url: fileUrl,
     });
 
     throw bufferError;
   }
 }
 
-async function showVersions(ctx, editExistingMessage = false) {
+
+async function showVersions(
+  ctx,
+  editExistingMessage = false,
+  forceRefresh = false
+) {
   try {
-    const versions = await getVersions();
+    const versions = await getVersions({ forceRefresh });
 
     if (!versions.length) {
       const message = ERROR_MESSAGES.EMPTY_VERSIONS;
 
       if (editExistingMessage) {
-        await ctx.editMessageText(message);
+        try {
+          await ctx.editMessageText(message);
+        } catch (error) {
+          if (!isMessageNotModifiedError(error)) {
+            throw error;
+          }
+        }
       } else {
         await ctx.reply(message);
       }
@@ -204,10 +241,16 @@ async function showVersions(ctx, editExistingMessage = false) {
     const keyboard = buildVersionsKeyboard(versions);
 
     if (editExistingMessage) {
-      await ctx.editMessageText(VERSIONS_TEXT, {
-        reply_markup: keyboard,
-        parse_mode: "HTML",
-      });
+      try {
+        await ctx.editMessageText(VERSIONS_TEXT, {
+          reply_markup: keyboard,
+          parse_mode: "HTML",
+        });
+      } catch (error) {
+        if (!isMessageNotModifiedError(error)) {
+          throw error;
+        }
+      }
     } else {
       await ctx.reply(VERSIONS_TEXT, {
         reply_markup: keyboard,
@@ -225,12 +268,21 @@ async function showVersions(ctx, editExistingMessage = false) {
       : ERROR_MESSAGES.API_UNAVAILABLE;
 
     if (editExistingMessage) {
-      await ctx.editMessageText(message);
+      try {
+        await ctx.editMessageText(message);
+      } catch (editError) {
+        if (!isMessageNotModifiedError(editError)) {
+          console.error("Failed to edit error message:", {
+            message: editError.message,
+          });
+        }
+      }
     } else {
       await ctx.reply(message);
     }
   }
 }
+
 
 bot.command("start", async (ctx) => {
   await ctx.reply(START_TEXT, {
@@ -265,8 +317,9 @@ bot.callbackQuery("refresh_versions", async (ctx) => {
     text: "Обновляю список версий…",
   });
 
-  await showVersions(ctx, true);
+  await showVersions(ctx, true, true);
 });
+
 
 bot.callbackQuery(/^download:([a-f0-9]{16})$/, async (ctx) => {
   await ctx.answerCallbackQuery({
