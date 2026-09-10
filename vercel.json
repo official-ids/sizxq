@@ -1,13 +1,15 @@
 {
-    "rewrites": [
-        { "source": "/api/(.*)", "destination": "/api/$1" }
-    ],
-    "headers": [
-        {
-            "source": "/api/(.*)",
-            "headers": [
-                { "key": "Access-Control-Allow-Origin", "value": "*" }
-            ]
-        }
-    ]
+  "version": 2,
+  "functions": {
+    "api/webhook.js": {
+      "maxDuration": 60
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/webhook",
+      "methods": ["POST"],
+      "dest": "/api/webhook.js"
+    }
+  ]
 }

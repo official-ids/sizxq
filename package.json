@@ -1,0 +1,17 @@
+{
+  "name": "undercur-telegram-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Telegram webhook bot for downloading UnderCur releases",
+  "main": "api/webhook.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "grammy": "^1.38.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
