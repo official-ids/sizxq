@@ -1,15 +1,7 @@
 {
-  "version": 2,
   "functions": {
-    "api/webhook.js": {
-      "maxDuration": 60
+    "api/fileshare.js": {
+      "maxDuration": 35
     }
-  },
-  "routes": [
-    {
-      "src": "/api/webhook",
-      "methods": ["POST"],
-      "dest": "/api/webhook.js"
-    }
-  ]
+  }
 }
