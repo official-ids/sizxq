@@ -1,0 +1,2020 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POZZINGSX -- позинги от пака</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           RESET & BASE
+           ============================================ */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0b0b0d;
+            --bg-2: #131318;
+            --bg-3: #1c1c24;
+            --surface: #16161d;
+            --border: #2a2a35;
+            --border-light: #3a3a48;
+            --text: #f0f0f5;
+            --text-dim: #8a8a9a;
+            --text-muted: #5a5a6a;
+            --accent: #c4ff00;
+            --accent-2: #ff3d00;
+            --accent-3: #00d4ff;
+            --purple: #7c3aed;
+            --font-display: 'Unbounded', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-display);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            cursor: default;
+        }
+
+        ::selection {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        /* scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        a { color: inherit; text-decoration: none; }
+        button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+        ul { list-style: none; }
+        img { max-width: 100%; display: block; }
+
+        /* ============================================
+           NOISE OVERLAY
+           ============================================ */
+        .noise {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+        }
+
+        /* ============================================
+           GRID BACKGROUND
+           ============================================ */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+        }
+
+        /* ============================================
+           NAV
+           ============================================ */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+
+        .nav.scrolled {
+            background: rgba(11, 11, 13, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 40px;
+        }
+
+        .nav-logo {
+            font-weight: 900;
+            font-size: 20px;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-logo-mark {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            color: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 16px;
+            transform: rotate(-4deg);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 36px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-dim);
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        .nav-links a::before {
+            content: attr(data-num);
+            color: var(--text-muted);
+            margin-right: 6px;
+            font-size: 11px;
+        }
+
+        .nav-cta {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 10px 20px;
+            background: var(--accent);
+            color: var(--bg);
+            border-radius: 0;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 10;
+            pointer-events: auto; /* ДОБАВИТЬ если нет */
+        }
+
+        .nav-cta:hover {
+            background: var(--text);
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0 var(--accent-2);
+        }
+
+        .nav-burger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            width: 28px;
+        }
+
+        .nav-burger span {
+            height: 2px;
+            background: var(--text);
+            transition: all 0.3s;
+        }
+
+        /* ============================================
+           HERO
+           ============================================ */
+        .hero {
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 140px 40px 80px;
+            overflow: hidden;
+        }
+
+        .hero-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-tag {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hero-tag::before {
+            content: '';
+            width: 40px;
+            height: 1px;
+            background: var(--text-muted);
+        }
+
+        .hero-title {
+            font-size: clamp(48px, 10vw, 140px);
+            font-weight: 900;
+            line-height: 0.9;
+            letter-spacing: -4px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        .hero-title .line {
+            display: block;
+            overflow: hidden;
+        }
+
+        .hero-title .line span {
+            display: inline-block;
+            animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transform: translateY(100%);
+        }
+
+        .hero-title .line:nth-child(2) span {
+            animation-delay: 0.15s;
+        }
+
+        .hero-title .line:nth-child(3) span {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes slideUp {
+            to { transform: translateY(0); }
+        }
+
+        .hero-title .highlight {
+            color: var(--accent);
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero-title .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-2);
+            animation: underline 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
+            transform: scaleX(0);
+            transform-origin: left;
+        }
+
+        @keyframes underline {
+            to { transform: scaleX(1); }
+        }
+
+        .hero-bottom {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: end;
+            margin-top: 60px;
+        }
+
+        .hero-desc {
+            font-family: var(--font-mono);
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-dim);
+            max-width: 440px;
+        }
+
+        .hero-desc strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 18px 32px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 6px 6px 0 var(--accent-2);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--text);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .btn-arrow {
+            transition: transform 0.2s;
+        }
+
+        .btn:hover .btn-arrow {
+            transform: translateX(4px);
+        }
+
+        .hero-meta {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            right: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .hero-scroll {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hero-scroll-line {
+            width: 40px;
+            height: 1px;
+            background: var(--text-muted);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-scroll-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--accent);
+            animation: scrollLine 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollLine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* ============================================
+           MARQUEE
+           ============================================ */
+        .marquee {
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 24px 0;
+            overflow: hidden;
+            background: var(--bg-2);
+        }
+
+        .marquee-track {
+            display: flex;
+            gap: 60px;
+            animation: marquee 30s linear infinite;
+            width: max-content;
+        }
+
+        .marquee-item {
+            font-size: 28px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            white-space: nowrap;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 60px;
+        }
+
+        .marquee-item::after {
+            content: '*';
+            color: var(--accent);
+            font-size: 20px;
+        }
+
+        @keyframes marquee {
+            to { transform: translateX(-50%); }
+        }
+
+        /* ============================================
+           SECTIONS COMMON
+           ============================================ */
+        .section {
+            padding: 120px 40px;
+            position: relative;
+        }
+
+        .section-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-head {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 40px;
+            align-items: start;
+            margin-bottom: 80px;
+        }
+
+        .section-num {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding-top: 8px;
+        }
+
+        .section-title {
+            font-size: clamp(36px, 6vw, 72px);
+            font-weight: 800;
+            line-height: 0.95;
+            letter-spacing: -2px;
+            text-transform: uppercase;
+        }
+
+        .section-title em {
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        /* ============================================
+           ABOUT
+           ============================================ */
+        .about {
+            background: var(--bg);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+        }
+
+        .about-card {
+            background: var(--bg);
+            padding: 48px 36px;
+            transition: background 0.3s;
+            position: relative;
+        }
+
+        .about-card:hover {
+            background: var(--bg-2);
+        }
+
+        .about-card-num {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            display: block;
+        }
+
+        .about-card-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+
+        .about-card-text {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-dim);
+        }
+
+        .about-card-icon {
+            width: 48px;
+            height: 48px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            font-size: 20px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* ============================================
+           PRICING
+           ============================================ */
+        .pricing {
+            background: var(--bg-2);
+        }
+
+        .pricing-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+.price-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 48px;
+    position: relative;
+    transition: all 0.3s;
+    overflow: visible; /* ЗАМЕНИТЬ или ДОБАВИТЬ */
+    display: flex;
+    flex-direction: column;
+}
+
+        .price-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .price-card.featured {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, var(--bg) 0%, rgba(196, 255, 0, 0.03) 100%);
+        }
+
+        .price-card.featured::before {
+            content: 'POPULAR';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--bg);
+            background: var(--accent);
+            padding: 4px 10px;
+        }
+
+        .price-card-head {
+            margin-bottom: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .price-card-label {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .price-card-title {
+            font-size: 32px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .price-card-sub {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .price-card-price {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .price-main {
+            font-size: 56px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .price-currency {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--text-dim);
+        }
+
+        .price-alt {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-dim);
+            padding: 12px 16px;
+            background: var(--bg-2);
+            border-left: 2px solid var(--accent);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .price-alt strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .price-features {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .price-feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .price-feature-check {
+            width: 18px;
+            height: 18px;
+            background: var(--accent);
+            color: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+.price-order {
+    margin-top: 40px;
+    width: 100%;
+    padding: 18px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    position: relative; /* ДОБАВИТЬ */
+    z-index: 2; /* ДОБАВИТЬ */
+    display: inline-flex; /* ЗАМЕНИТЬ width: 100% на это */
+    align-items: center;
+    justify-content: center;
+}
+
+        .price-order:hover {
+            background: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        .price-card.featured .price-order {
+            background: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        .price-card.featured .price-order:hover {
+            background: var(--text);
+            border-color: var(--text);
+        }
+
+        /* addons */
+        .addons {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 48px;
+        }
+
+        .addons-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .addons-title {
+            font-size: 24px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+
+        .addons-sub {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .addons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .addon {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            padding: 28px 24px;
+            transition: all 0.2s;
+        }
+
+        .addon:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .addon-price {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .addon-label {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* ============================================
+           EXAMPLES / CAROUSEL
+           ============================================ */
+        .examples {
+            background: var(--bg);
+        }
+
+        .carousel-wrap {
+            position: relative;
+        }
+
+        .carousel {
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--bg-2);
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            min-height: 500px;
+        }
+
+        .slide-visual {
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-3);
+        }
+
+        .slide-visual-inner {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .slide-visual-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 40px;
+        }
+
+        .slide-visual-box {
+            width: 120px;
+            height: 120px;
+            border: 2px dashed var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--text-muted);
+        }
+
+        .slide-content {
+            padding: 60px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide-num {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+        }
+
+        .slide-title {
+            font-size: 40px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 20px;
+            line-height: 1;
+        }
+
+        .slide-desc {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        .slide-meta {
+            display: flex;
+            gap: 24px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .slide-meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slide-meta span::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+        }
+
+        .carousel-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+        }
+
+        .carousel-nav {
+            display: flex;
+            gap: 12px;
+        }
+
+        .carousel-btn {
+            width: 56px;
+            height: 56px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .carousel-btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        .carousel-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .carousel-dots {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .carousel-dot {
+            width: 32px;
+            height: 3px;
+            background: var(--border);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .carousel-dot.active {
+            background: var(--accent);
+            width: 48px;
+        }
+
+        .carousel-counter {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .carousel-counter strong {
+            color: var(--text);
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        /* ============================================
+           CTA
+           ============================================ */
+        .cta {
+            background: var(--accent);
+            color: var(--bg);
+            padding: 140px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-title {
+            font-size: clamp(48px, 9vw, 120px);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -4px;
+            line-height: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .cta-title em {
+            font-style: normal;
+            color: var(--bg);
+            opacity: 0.3;
+        }
+
+        .cta-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            flex-wrap: wrap;
+            gap: 32px;
+        }
+
+        .cta-desc {
+            font-family: var(--font-mono);
+            font-size: 15px;
+            line-height: 1.7;
+            max-width: 440px;
+            opacity: 0.8;
+        }
+
+        .cta-btn {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 24px 48px;
+            background: var(--bg);
+            color: var(--accent);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+
+        .cta-btn:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 6px 6px 0 var(--bg-2);
+        }
+
+        .cta-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .footer {
+            background: var(--bg);
+            padding: 60px 40px 30px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-top {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+
+        .footer-brand-title {
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            margin-bottom: 16px;
+        }
+
+        .footer-brand-text {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-dim);
+            line-height: 1.7;
+            max-width: 360px;
+        }
+
+        .footer-col-title {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-links a {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-dim);
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ============================================
+           MODAL
+           ============================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 48px;
+            position: relative;
+            transform: translateY(20px) scale(0.95);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+        }
+
+        .modal-text {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--text-dim);
+        }
+
+        .modal-text h4 {
+            font-family: var(--font-display);
+            color: var(--text);
+            font-size: 16px;
+            font-weight: 700;
+            margin: 20px 0 10px;
+            text-transform: uppercase;
+        }
+
+        .modal-text p {
+            margin-bottom: 12px;
+        }
+
+        .modal-text ul {
+            list-style: none;
+            margin: 12px 0;
+        }
+
+        .modal-text ul li {
+            padding-left: 20px;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .modal-text ul li::before {
+            content: '--';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        /* ============================================
+           MOBILE MENU
+           ============================================ */
+        .mobile-menu {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 99;
+            padding: 100px 40px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            transform: translateY(-100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .mobile-menu.active {
+            transform: translateY(0);
+        }
+
+        .mobile-menu a {
+            font-size: 32px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            display: block;
+        }
+
+        .mobile-menu a:hover {
+            color: var(--accent);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1024px) {
+            .about-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .pricing-layout {
+                grid-template-columns: 1fr;
+            }
+            .addons-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .carousel-slide {
+                grid-template-columns: 1fr;
+                min-height: auto;
+            }
+            .slide-visual {
+                min-height: 300px;
+            }
+            .footer-top {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav { padding: 16px 20px; }
+            .nav.scrolled { padding: 12px 20px; }
+            .nav-links { display: none; }
+            .nav-burger { display: flex; }
+            .section { padding: 80px 20px; }
+            .hero { padding: 120px 20px 80px; }
+            .hero-bottom {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .hero-actions { justify-content: flex-start; }
+            .hero-meta {
+                left: 20px;
+                right: 20px;
+                bottom: 20px;
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+            .section-head {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+            .price-card { padding: 32px 24px; }
+            .addons { padding: 32px 24px; }
+            .addons-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .slide-content { padding: 32px 24px; }
+            .slide-title { font-size: 28px; }
+            .cta { padding: 80px 20px; }
+            .cta-bottom { flex-direction: column; align-items: flex-start; }
+            .footer { padding: 40px 20px 20px; }
+            .footer-top {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .modal { padding: 32px 24px; }
+        }
+
+        @media (max-width: 480px) {
+            .addons-grid {
+                grid-template-columns: 1fr;
+            }
+            .price-main { font-size: 42px; }
+        }
+
+        /* ============================================
+           ANIMATIONS
+           ============================================ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* Glitch on hover for logo */
+        .nav-logo:hover .nav-logo-mark {
+            animation: glitch 0.3s ease;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: rotate(-4deg); }
+            25% { transform: rotate(-4deg) translate(-2px, 1px); }
+            50% { transform: rotate(-4deg) translate(2px, -1px); }
+            75% { transform: rotate(-4deg) translate(-1px, -1px); }
+        }
+
+.cursor-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none; /* ВАЖНО: должно быть none */
+    z-index: 9999; /* УМЕНЬШИТЬ с 10000 */
+    transition: transform 0.1s;
+    mix-blend-mode: difference;
+}
+
+        @media (pointer: coarse) {
+            .cursor-dot { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="grid-bg"></div>
+    <div class="cursor-dot" id="cursorDot"></div>
+
+    <!-- NAV -->
+    <nav class="nav" id="nav">
+        <a href="#" class="nav-logo">
+            <span class="nav-logo-mark">P</span>
+            POZZINGSX
+        </a>
+        <ul class="nav-links">
+            <li><a href="#about" data-num="01">О нас</a></li>
+            <li><a href="#pricing" data-num="02">Цены</a></li>
+            <li><a href="#examples" data-num="03">Примеры</a></li>
+            <li><a href="https://t.me/pozzingsx" target="_blank" class="nav-cta">Telegram</a></li>
+        </ul>
+        <button class="nav-burger" id="burger" aria-label="menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#about" data-close>О нас</a>
+        <a href="#pricing" data-close>Цены</a>
+        <a href="#examples" data-close>Примеры</a>
+        <a href="https://t.me/pozzingsx" target="_blank">Telegram канал</a>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-inner">
+            <div class="hero-tag">pozingsx / services / 2026</div>
+            <h1 class="hero-title">
+                <span class="line"><span>Позинги</span></span>
+                <span class="line"><span>от <em class="highlight">пака</em></span></span>
+                <span class="line"><span>дешево.</span></span>
+            </h1>
+            <div class="hero-bottom">
+                <p class="hero-desc">
+                    Делаем позинги <strong>быстро</strong> и <strong>качественно</strong>.
+                    Самые низкие цены на рынке. Оплата рублями, робуксами, годли или легендарками -- выбирай как удобно.
+                </p>
+                <div class="hero-actions">
+                    <a href="https://t.me/pozzingsx" target="_blank" class="btn btn-primary">
+                        Заказать
+                        <span class="btn-arrow">-></span>
+                    </a>
+                    <a href="#pricing" class="btn btn-ghost">Прайс</a>
+                </div>
+            </div>
+        </div>
+        <div class="hero-meta">
+            <div>SCROLL TO EXPLORE</div>
+            <div class="hero-scroll">
+                <span>01 / 04</span>
+                <div class="hero-scroll-line"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee">
+        <div class="marquee-track">
+            <span class="marquee-item">Дешевые цены</span>
+            <span class="marquee-item">Качественно</span>
+            <span class="marquee-item">Быстро</span>
+            <span class="marquee-item">Надежно</span>
+            <span class="marquee-item">Дешевые цены</span>
+            <span class="marquee-item">Качественно</span>
+            <span class="marquee-item">Быстро</span>
+            <span class="marquee-item">Надежно</span>
+        </div>
+    </div>
+
+    <!-- ABOUT -->
+    <section class="section about" id="about">
+        <div class="section-inner">
+            <div class="section-head reveal">
+                <div class="section-num">[01] -- О нас</div>
+                <h2 class="section-title">Почему <em>мы</em>,<br>а не другие</h2>
+            </div>
+            <div class="about-grid">
+                <div class="about-card reveal">
+                    <span class="about-card-num">01</span>
+                    <div class="about-card-icon">$</div>
+                    <h3 class="about-card-title">Дешевые цены</h3>
+                    <p class="about-card-text">Самые низкие цены на рынке. Рубли, робуксы, годли, легендарки -- принимаем всё. Без скрытых доплат.</p>
+                </div>
+                <div class="about-card reveal reveal-delay-1">
+                    <span class="about-card-num">02</span>
+                    <div class="about-card-icon">*</div>
+                    <h3 class="about-card-title">Качество</h3>
+                    <p class="about-card-text">Каждый позинг делаем аккуратно. Опытные исполнители, проверенные методы. Результат гарантирован.</p>
+                </div>
+                <div class="about-card reveal reveal-delay-2">
+                    <span class="about-card-num">03</span>
+                    <div class="about-card-icon">></div>
+                    <h3 class="about-card-title">Скорость</h3>
+                    <p class="about-card-text">Не заставляем ждать. Большинство заказов выполняем в течение нескольких часов после оплаты.</p>
+                </div>
+                <div class="about-card reveal">
+                    <span class="about-card-num">04</span>
+                    <div class="about-card-icon">#</div>
+                    <h3 class="about-card-title">Надежность</h3>
+                    <p class="about-card-text">Работаем честно. Сотни выполненных заказов, постоянные клиенты. Аккаунт в безопасности.</p>
+                </div>
+                <div class="about-card reveal reveal-delay-1">
+                    <span class="about-card-num">05</span>
+                    <div class="about-card-icon">+</div>
+                    <h3 class="about-card-title">Гибкость</h3>
+                    <p class="about-card-text">Работаем по твоим требованиям. Любые пожелания учитываем. Индивидуальный подход к каждому заказу.</p>
+                </div>
+                <div class="about-card reveal reveal-delay-2">
+                    <span class="about-card-num">06</span>
+                    <div class="about-card-icon">@</div>
+                    <h3 class="about-card-title">На связи</h3>
+                    <p class="about-card-text">Отвечаем быстро. Всегда в телеграме. Решаем вопросы оперативно, без долгих ожиданий.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING -->
+    <section class="section pricing" id="pricing">
+        <div class="section-inner">
+            <div class="section-head reveal">
+                <div class="section-num">[02] -- Прайс</div>
+                <h2 class="section-title">Цены.<br><em>Без обмана.</em></h2>
+            </div>
+
+            <div class="pricing-layout">
+                <div class="price-card reveal">
+                    <div class="price-card-head">
+                        <div class="price-card-label">Тариф 01</div>
+                        <h3 class="price-card-title">1 человек</h3>
+                        <div class="price-card-sub">базовый позинг, без предметов</div>
+                    </div>
+                    <div class="price-card-price">
+                        <span class="price-main">20</span>
+                        <span class="price-currency">рублей</span>
+                    </div>
+                    <div class="price-alt">
+                        или <strong>10 робуксов</strong> / <strong>1 легендарка</strong> -- выбирай способ оплаты
+                    </div>
+                    <ul class="price-features">
+                        <li class="price-feature">
+                            <span class="price-feature-check">+</span>
+                            Позинг для одного персонажа
+                        </li>
+                        <li class="price-feature">
+                            <span class="price-feature-check">+</span>
+                            Быстрое выполнение
+                        </li>
+                        <li class="price-feature">
+                            <span class="price-feature-check">+</span>
+                            Качественный результат
+                        </li>
+                    </ul>
+                    <a href="https://t.me/pozzingsx" target="_blank" class="price-order">Заказать -></a>
+                </div>
+
+                <div class="price-card featured reveal reveal-delay-1">
+                    <div class="price-card-head">
+                        <div class="price-card-label">Тариф 02</div>
+                        <h3 class="price-card-title">2 человека</h3>
+                        <div class="price-card-sub">позинг для двоих, без предметов</div>
+                    </div>
+                    <div class="price-card-price">
+                        <span class="price-main">30</span>
+                        <span class="price-currency">рублей</span>
+                    </div>
+                    <div class="price-alt">
+                        или <strong>20 робуксов</strong> / <strong>1 годли</strong> (MM2) -- альтернативная оплата
+                    </div>
+                    <ul class="price-features">
+                        <li class="price-feature">
+                            <span class="price-feature-check">+</span>
+                            Позинг для двух персонажей
+                        </li>
+                        <li class="price-feature">
+                            <span class="price-feature-check">+</span>
+                            Приоритетное выполнение
+                        </li>
+                        <li class="price-feature">
+                            <span class="price-feature-check">+</span>
+                            Качественный результат
+                        </li>
+                    </ul>
+                    <a href="https://t.me/pozzingsx" target="_blank" class="price-order">Заказать -></a>
+                </div>
+            </div>
+
+            <div class="addons reveal">
+                <div class="addons-head">
+                    <h3 class="addons-title">Дополнительные предметы</h3>
+                    <div class="addons-sub">добавь к любому тарифу</div>
+                </div>
+                <div class="addons-grid">
+                    <div class="addon">
+                        <div class="addon-price">+20р</div>
+                        <div class="addon-label">Добавление предмета к позингу</div>
+                    </div>
+                    <div class="addon">
+                        <div class="addon-price">+15 R$</div>
+                        <div class="addon-label">Оплата робуксами за предмет</div>
+                    </div>
+                    <div class="addon">
+                        <div class="addon-price">2 Seer</div>
+                        <div class="addon-label">Оплата валютой Seer</div>
+                    </div>
+                    <div class="addon">
+                        <div class="addon-price">4 лег.</div>
+                        <div class="addon-label">Оплата легендарками MM2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EXAMPLES -->
+    <section class="section examples" id="examples">
+        <div class="section-inner">
+            <div class="section-head reveal">
+                <div class="section-num">[03] -- Примеры</div>
+                <h2 class="section-title">Наши <em>работы</em></h2>
+            </div>
+
+            <div class="carousel-wrap reveal">
+                <div class="carousel">
+                    <div class="carousel-track" id="carouselTrack">
+                        <div class="carousel-slide">
+<div class="slide-visual">
+    <img src="https://pozingotpaka.vercel.app/assets/1.jpg" alt="Пример 1" style="width:100%;height:100%;object-fit:cover;">
+</div>
+                            <div class="slide-content">
+                                <div class="slide-num">WORK / 01</div>
+                                <h3 class="slide-title">Позинг<br>для одного</h3>
+                                <p class="slide-desc">Базовый позинг для одного персонажа. Быстрое выполнение, качественный результат. Один из самых популярных заказов.</p>
+                                <div class="slide-meta">
+                                    <span>1 человек</span>
+                                    <span>20 рублей</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="carousel-slide">
+<div class="slide-visual">
+    <img src="https://pozingotpaka.vercel.app/assets/2.jpg" alt="Пример 2" style="width:100%;height:100%;object-fit:cover;">
+</div>
+                            <div class="slide-content">
+                                <div class="slide-num">WORK / 02</div>
+                                <h3 class="slide-title">Позинг<br>для двоих</h3>
+                                <p class="slide-desc">Позинг для двух персонажей. Более сложная композиция, требует больше времени, но результат того стоит.</p>
+                                <div class="slide-meta">
+                                    <span>2 человека</span>
+                                    <span>30 рублей</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="carousel-slide">
+<div class="slide-visual">
+    <img src="https://pozingotpaka.vercel.app/assets/3.jpg" alt="Пример 3" style="width:100%;height:100%;object-fit:cover;">
+</div>
+                            <div class="slide-content">
+                                <div class="slide-num">WORK / 03</div>
+                                <h3 class="slide-title">С предметом</h3>
+                                <p class="slide-desc">Позинг с дополнительными предметами. Добавляем любой предмет по запросу. Отлично смотрится в профиле.</p>
+                                <div class="slide-meta">
+                                    <span>+предмет</span>
+                                    <span>+20 рублей</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-controls">
+                    <div class="carousel-nav">
+                        <button class="carousel-btn" id="prevBtn" aria-label="prev">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <button class="carousel-btn" id="nextBtn" aria-label="next">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
+                    <div class="carousel-dots" id="carouselDots"></div>
+                    <div class="carousel-counter">
+                        <strong id="currentSlide">01</strong> / <span id="totalSlides">03</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <div class="cta-inner">
+            <h2 class="cta-title reveal">
+                Готов<br><em>заказать?</em>
+            </h2>
+            <div class="cta-bottom reveal reveal-delay-1">
+                <p class="cta-desc">
+                    Переходи в наш телеграм канал, оставляй заявку. Отвечаем быстро, делаем качественно. Ждем тебя.
+                </p>
+                <a href="https://t.me/pozzingsx" target="_blank" class="cta-btn">
+                    Перейти в канал
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-top">
+                <div>
+                    <div class="footer-brand-title">POZZINGSX</div>
+                    <p class="footer-brand-text">Позинги от пака. Дешево, качественно, быстро. Работаем с 2026 года.</p>
+                </div>
+                <div>
+                    <div class="footer-col-title">Навигация</div>
+                    <div class="footer-links">
+                        <a href="#about">О нас</a>
+                        <a href="#pricing">Цены</a>
+                        <a href="#examples">Примеры</a>
+                        <a href="https://t.me/pozzingsx" target="_blank">Telegram</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="footer-col-title">Инфо</div>
+                    <div class="footer-links">
+                        <a data-modal="terms">Условия</a>
+                        <a data-modal="privacy">Конфиденциальность</a>
+                        <a href="https://pozingotpaka.vercel.app/order">Расчет</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div>(c) 2026 POZZINGSX. Все права защищены.</div>
+                <div>made with care</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODALS -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <button class="modal-close" id="modalClose">x</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        /* ============================================
+           NAV SCROLL
+           ============================================ */
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 40) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        /* ============================================
+           MOBILE MENU
+           ============================================ */
+        const burger = document.getElementById('burger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        let menuOpen = false;
+
+        burger.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            mobileMenu.classList.toggle('active', menuOpen);
+            const spans = burger.querySelectorAll('span');
+            if (menuOpen) {
+                spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+                spans[1].style.opacity = '0';
+                spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
+            } else {
+                spans[0].style.transform = '';
+                spans[1].style.opacity = '1';
+                spans[2].style.transform = '';
+            }
+        });
+
+        document.querySelectorAll('[data-close]').forEach(link => {
+            link.addEventListener('click', () => {
+                menuOpen = false;
+                mobileMenu.classList.remove('active');
+                const spans = burger.querySelectorAll('span');
+                spans[0].style.transform = '';
+                spans[1].style.opacity = '1';
+                spans[2].style.transform = '';
+            });
+        });
+
+        /* ============================================
+           REVEAL ON SCROLL
+           ============================================ */
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        /* ============================================
+           CAROUSEL
+           ============================================ */
+        const track = document.getElementById('carouselTrack');
+        const slides = track.children;
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const dotsContainer = document.getElementById('carouselDots');
+        const currentSlideEl = document.getElementById('currentSlide');
+        const totalSlidesEl = document.getElementById('totalSlides');
+
+        let currentIndex = 0;
+        const totalSlides = slides.length;
+        totalSlidesEl.textContent = String(totalSlides).padStart(2, '0');
+
+        // create dots
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('button');
+            dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        }
+
+        function updateCarousel() {
+            track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            document.querySelectorAll('.carousel-dot').forEach((d, i) => {
+                d.classList.toggle('active', i === currentIndex);
+            });
+            currentSlideEl.textContent = String(currentIndex + 1).padStart(2, '0');
+        }
+
+        function goToSlide(i) {
+            currentIndex = i;
+            updateCarousel();
+            resetAutoplay();
+        }
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            updateCarousel();
+        }
+
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+            updateCarousel();
+        }
+
+        nextBtn.addEventListener('click', () => { nextSlide(); resetAutoplay(); });
+        prevBtn.addEventListener('click', () => { prevSlide(); resetAutoplay(); });
+
+        // touch
+        let touchStartX = 0;
+        track.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+        track.addEventListener('touchend', (e) => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextSlide(); else prevSlide();
+                resetAutoplay();
+            }
+        });
+
+        // keyboard
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') { prevSlide(); resetAutoplay(); }
+            if (e.key === 'ArrowRight') { nextSlide(); resetAutoplay(); }
+        });
+
+        // autoplay
+        let autoplayInterval = setInterval(nextSlide, 5000);
+        function resetAutoplay() {
+            clearInterval(autoplayInterval);
+            autoplayInterval = setInterval(nextSlide, 5000);
+        }
+
+        const carouselEl = document.querySelector('.carousel');
+        carouselEl.addEventListener('mouseenter', () => clearInterval(autoplayInterval));
+        carouselEl.addEventListener('mouseleave', () => { autoplayInterval = setInterval(nextSlide, 5000); });
+
+        /* ============================================
+           MODALS
+           ============================================ */
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalContent = document.getElementById('modalContent');
+        const modalClose = document.getElementById('modalClose');
+
+        const modalData = {
+            terms: {
+                title: 'Условия использования',
+                html: `
+                    <p>Используя наши услуги, вы соглашаетесь со следующими условиями:</p>
+                    <h4>1. Оплата</h4>
+                    <p>Оплата производится заранее, до начала выполнения заказа. Принимаем рубли, робуксы, годли (MM2) и легендарки.</p>
+                    <h4>2. Выполнение заказа</h4>
+                    <ul>
+                        <li>Срок выполнения зависит от сложности заказа</li>
+                        <li>Большинство заказов выполняется в течение нескольких часов</li>
+                        <li>В случае задержки мы обязательно предупредим</li>
+                    </ul>
+                    <h4>3. Возврат</h4>
+                    <p>Возврат возможен только если заказ не был выполнен по нашей вине. После выполнения заказа возврат не производится.</p>
+                    <h4>4. Ответственность</h4>
+                    <p>Мы не несем ответственности за блокировки аккаунтов, связанные с нарушением правил игры. Работаем аккуратно, но риски существуют.</p>
+                    <h4>5. Изменения</h4>
+                    <p>Мы оставляем за собой право изменять цены и условия без предварительного уведомления.</p>
+                `
+            },
+            privacy: {
+                title: 'Конфиденциальность',
+                html: `
+                    <p>Мы серьезно относимся к конфиденциальности наших клиентов.</p>
+                    <h4>Что мы собираем</h4>
+                    <ul>
+                        <li>Никнейм в игре (для выполнения заказа)</li>
+                        <li>Контакт в Telegram (для связи)</li>
+                    </ul>
+                    <h4>Что мы НЕ делаем</h4>
+                    <ul>
+                        <li>Не передаем данные третьим лицам</li>
+                        <li>Не храним пароли и личные данные</li>
+                        <li>Не используем информацию в рекламных целях</li>
+                    </ul>
+                    <h4>Безопасность</h4>
+                    <p>Все коммуникации проходят через Telegram. Мы не запрашиваем пароли от аккаунтов. Работаем только с теми данными, которые необходимы для выполнения заказа.</p>
+                    <h4>Удаление данных</h4>
+                    <p>По запросу клиента мы удаляем все данные о заказе после его выполнения.</p>
+                `
+            }
+        };
+
+        document.querySelectorAll('[data-modal]').forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                const key = trigger.getAttribute('data-modal');
+                const data = modalData[key];
+                if (!data) return;
+                modalContent.innerHTML = `
+                    <h2 class="modal-title">${data.title}</h2>
+                    <div class="modal-text">${data.html}</div>
+                `;
+                modalOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        modalClose.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        /* ============================================
+           CUSTOM CURSOR
+           ============================================ */
+        const cursorDot = document.getElementById('cursorDot');
+        if (window.matchMedia('(pointer: fine)').matches) {
+            document.addEventListener('mousemove', (e) => {
+                cursorDot.style.left = e.clientX - 4 + 'px';
+                cursorDot.style.top = e.clientY - 4 + 'px';
+            });
+
+            document.querySelectorAll('a, button, .price-card, .about-card, .addon').forEach(el => {
+                el.addEventListener('mouseenter', () => { cursorDot.style.transform = 'scale(3)'; });
+                el.addEventListener('mouseleave', () => { cursorDot.style.transform = 'scale(1)'; });
+            });
+        }
+
+        /* ============================================
+           SMOOTH SCROLL
+           ============================================ */
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href === '#') return;
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        /* ============================================
+           CONSOLE BRANDING
+           ============================================ */
+        console.log('%c POZZINGSX ', 'background: #c4ff00; color: #0b0b0d; font-size: 20px; font-weight: 900; padding: 10px 16px;');
+        console.log('%c pozings from the pak ', 'color: #8a8a9a; font-size: 12px; font-family: monospace;');
+    </script>
+</body>
+</html>

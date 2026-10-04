@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/fileshare.js": {
-      "maxDuration": 35
-    }
-  }
-}
