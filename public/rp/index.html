@@ -1,0 +1,1947 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Магнит - Магазин самообслуживания</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: #f5f5f5;
+    color: #333;
+    min-height: 100vh;
+}
+
+/* ===== HEADER ===== */
+.header {
+    background: linear-gradient(180deg, #ed1c24 0%, #c8102e 100%);
+    color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.logo-icon {
+    width: 50px;
+    height: 50px;
+    background: #ffcc00;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    color: #c8102e;
+    font-size: 28px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.logo-text {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.logo-subtitle {
+    font-size: 11px;
+    opacity: 0.9;
+    letter-spacing: 2px;
+}
+
+.search-bar {
+    flex: 1;
+    max-width: 500px;
+    margin: 0 30px;
+    position: relative;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 12px 45px 12px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 15px;
+    background: white;
+    outline: none;
+    transition: box-shadow 0.2s;
+}
+
+.search-bar input:focus {
+    box-shadow: 0 0 0 3px rgba(255,204,0,0.5);
+}
+
+.search-bar button {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ffcc00;
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.search-bar button:hover {
+    background: #ffd633;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.balance-card {
+    background: rgba(255,255,255,0.15);
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.balance-icon {
+    width: 24px;
+    height: 24px;
+    background: #ffcc00;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c8102e;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.balance-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+}
+
+.balance-label {
+    opacity: 0.8;
+    font-size: 10px;
+}
+
+.balance-amount {
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.bonus-card {
+    background: rgba(255,255,255,0.15);
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.bonus-icon {
+    width: 24px;
+    height: 24px;
+    background: #ffcc00;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c8102e;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.cart-btn {
+    background: #ffcc00;
+    color: #c8102e;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.cart-btn:hover {
+    background: #ffd633;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.cart-count {
+    background: #c8102e;
+    color: white;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* ===== PROMO BANNER ===== */
+.promo-banner {
+    background: linear-gradient(90deg, #ffcc00 0%, #ffdb4d 100%);
+    padding: 15px 30px;
+    text-align: center;
+    color: #c8102e;
+    font-weight: bold;
+    font-size: 16px;
+    border-bottom: 3px solid #c8102e;
+}
+
+.promo-banner span {
+    margin: 0 20px;
+}
+
+/* ===== CATEGORIES ===== */
+.categories {
+    background: white;
+    padding: 15px 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.categories-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    gap: 10px;
+}
+
+.category-btn {
+    padding: 10px 20px;
+    border: 2px solid #ed1c24;
+    background: white;
+    color: #ed1c24;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.category-btn:hover {
+    background: #fff5f5;
+}
+
+.category-btn.active {
+    background: #ed1c24;
+    color: white;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 30px;
+}
+
+.section-title {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.section-title::before {
+    content: '';
+    width: 6px;
+    height: 30px;
+    background: #ed1c24;
+    border-radius: 3px;
+}
+
+.sort-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.sort-options {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.sort-options span {
+    font-weight: 600;
+    color: #666;
+}
+
+.sort-btn {
+    padding: 6px 14px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.sort-btn:hover {
+    border-color: #ed1c24;
+    color: #ed1c24;
+}
+
+.sort-btn.active {
+    background: #ed1c24;
+    color: white;
+    border-color: #ed1c24;
+}
+
+.product-count {
+    color: #666;
+    font-size: 14px;
+}
+
+/* ===== PRODUCT GRID ===== */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+    margin-bottom: 40px;
+}
+
+.product-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.25s;
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.product-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #ed1c24;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.product-badge.new {
+    background: #4caf50;
+}
+
+.product-badge.hit {
+    background: #ff9800;
+}
+
+.product-image {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, #f9f9f9 0%, #ececec 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-image svg {
+    width: 110px;
+    height: 110px;
+    transition: transform 0.3s;
+}
+
+.product-card:hover .product-image svg {
+    transform: scale(1.1);
+}
+
+.product-info {
+    padding: 14px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+    line-height: 1.3;
+    min-height: 36px;
+}
+
+.product-weight {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.product-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: auto;
+    margin-bottom: 10px;
+}
+
+.product-price {
+    font-size: 20px;
+    font-weight: 800;
+    color: #333;
+}
+
+.product-price-old {
+    font-size: 14px;
+    color: #999;
+    text-decoration: line-through;
+}
+
+.product-price-currency {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.add-to-cart-btn {
+    background: #ed1c24;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    width: 100%;
+}
+
+.add-to-cart-btn:hover {
+    background: #c8102e;
+}
+
+.add-to-cart-btn.in-cart {
+    background: #4caf50;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ed1c24;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.quantity-control button {
+    background: transparent;
+    color: white;
+    border: none;
+    width: 40px;
+    height: 38px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.quantity-control button:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.quantity-control span {
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* ===== CART SIDEBAR ===== */
+.cart-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.cart-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.cart-sidebar {
+    position: fixed;
+    top: 0;
+    right: -450px;
+    width: 450px;
+    max-width: 100vw;
+    height: 100vh;
+    background: white;
+    z-index: 201;
+    transition: right 0.3s;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -5px 0 20px rgba(0,0,0,0.15);
+}
+
+.cart-sidebar.open {
+    right: 0;
+}
+
+.cart-header {
+    padding: 20px;
+    background: #ed1c24;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cart-header h2 {
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.cart-close {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    transition: background 0.2s;
+}
+
+.cart-close:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.cart-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+.cart-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+
+.cart-item-image {
+    width: 60px;
+    height: 60px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cart-item-image svg {
+    width: 40px;
+    height: 40px;
+}
+
+.cart-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.cart-item-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.cart-item-price {
+    font-size: 13px;
+    color: #888;
+}
+
+.cart-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cart-item-controls button {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #ed1c24;
+    background: white;
+    color: #ed1c24;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.cart-item-controls button:hover {
+    background: #ed1c24;
+    color: white;
+}
+
+.cart-item-controls span {
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+}
+
+.cart-item-total {
+    font-weight: bold;
+    color: #ed1c24;
+    min-width: 70px;
+    text-align: right;
+}
+
+.cart-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+}
+
+.cart-empty-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    opacity: 0.3;
+}
+
+.cart-footer {
+    padding: 20px;
+    border-top: 2px solid #eee;
+    background: #fafafa;
+}
+
+.cart-summary {
+    margin-bottom: 15px;
+}
+
+.cart-summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.cart-summary-row.total {
+    font-size: 20px;
+    font-weight: 800;
+    color: #333;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    margin-top: 10px;
+}
+
+.cart-summary-row .bonus-earned {
+    color: #4caf50;
+    font-weight: 600;
+}
+
+.checkout-btn {
+    width: 100%;
+    background: #ed1c24;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.checkout-btn:hover {
+    background: #c8102e;
+}
+
+.checkout-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-overlay.open {
+    display: flex;
+}
+
+.modal {
+    background: white;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalIn 0.3s;
+}
+
+@keyframes modalIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+    padding: 20px;
+    background: #ed1c24;
+    color: white;
+    border-radius: 16px 16px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.checkout-form .form-group {
+    margin-bottom: 15px;
+}
+
+.checkout-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #555;
+    font-size: 14px;
+}
+
+.checkout-form input,
+.checkout-form select,
+.checkout-form textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    font-family: inherit;
+}
+
+.checkout-form input:focus,
+.checkout-form select:focus,
+.checkout-form textarea:focus {
+    outline: none;
+    border-color: #ed1c24;
+}
+
+.payment-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.payment-option {
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.payment-option:hover {
+    border-color: #ed1c24;
+}
+
+.payment-option.selected {
+    border-color: #ed1c24;
+    background: #fff5f5;
+    color: #ed1c24;
+}
+
+/* ===== RECEIPT ===== */
+.receipt {
+    background: #fffef5;
+    padding: 25px;
+    border-radius: 12px;
+    font-family: 'Courier New', monospace;
+    border: 1px dashed #ccc;
+}
+
+.receipt-header {
+    text-align: center;
+    border-bottom: 1px dashed #999;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.receipt-header h3 {
+    font-size: 22px;
+    color: #ed1c24;
+    margin-bottom: 5px;
+}
+
+.receipt-items {
+    margin-bottom: 15px;
+}
+
+.receipt-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 13px;
+}
+
+.receipt-total {
+    border-top: 1px dashed #999;
+    padding-top: 10px;
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.receipt-footer {
+    text-align: center;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #999;
+    font-size: 12px;
+    color: #666;
+}
+
+/* ===== TOAST ===== */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #333;
+    color: white;
+    padding: 14px 24px;
+    border-radius: 30px;
+    font-weight: 600;
+    z-index: 400;
+    transition: transform 0.3s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast.success {
+    background: #4caf50;
+}
+
+.toast.error {
+    background: #ed1c24;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    background: #2c2c2c;
+    color: white;
+    padding: 30px;
+    margin-top: 40px;
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+}
+
+.footer-section h4 {
+    color: #ffcc00;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.footer-section p,
+.footer-section a {
+    color: #ccc;
+    font-size: 14px;
+    line-height: 1.8;
+    text-decoration: none;
+    display: block;
+}
+
+.footer-section a:hover {
+    color: #ffcc00;
+}
+
+.footer-bottom {
+    max-width: 1400px;
+    margin: 20px auto 0;
+    padding-top: 20px;
+    border-top: 1px solid #444;
+    text-align: center;
+    color: #888;
+    font-size: 13px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .header-top {
+        flex-wrap: wrap;
+        padding: 10px 15px;
+    }
+    .search-bar {
+        order: 3;
+        margin: 10px 0 0;
+        max-width: 100%;
+        flex-basis: 100%;
+    }
+    .logo-text {
+        font-size: 24px;
+    }
+    .balance-card, .bonus-card {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+    }
+    .cart-sidebar {
+        width: 100%;
+        right: -100%;
+    }
+    .main-content {
+        padding: 0 15px;
+    }
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-top">
+        <div class="logo" onclick="resetFilters()">
+            <div class="logo-icon">M</div>
+            <div>
+                <div class="logo-text">МАГНИТ</div>
+                <div class="logo-subtitle">МАГАЗИН РЯДОМ С ДОМОМ</div>
+            </div>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Найти товары..." oninput="handleSearch()">
+            <button onclick="handleSearch()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c8102e" stroke-width="3" stroke-linecap="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="header-actions">
+            <div class="balance-card">
+                <div class="balance-icon">₽</div>
+                <div class="balance-info">
+                    <div class="balance-label">БАЛАНС</div>
+                    <div class="balance-amount" id="balanceAmount">5000 ₽</div>
+                </div>
+            </div>
+            <div class="bonus-card">
+                <div class="bonus-icon">★</div>
+                <div class="balance-info">
+                    <div class="balance-label">БОНУСЫ</div>
+                    <div class="balance-amount" id="bonusAmount">150</div>
+                </div>
+            </div>
+            <button class="cart-btn" onclick="toggleCart()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                Корзина
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- PROMO BANNER -->
+<div class="promo-banner">
+    <span>АКЦИЯ НЕДЕЛИ: СКИДКИ ДО 40% НА МОЛОЧНЫЕ ПРОДУКТЫ</span>
+    <span>КАРТА ЛЮБИМЧИК: ДВОЙНЫЕ БОНУСЫ КАЖДУЮ СРЕДУ</span>
+    <span>БЕСПЛАТНАЯ ДОСТАВКА ОТ 1500 ₽</span>
+</div>
+
+<!-- CATEGORIES -->
+<nav class="categories">
+    <div class="categories-inner" id="categoriesNav"></div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main-content">
+    <h1 class="section-title" id="sectionTitle">Все товары</h1>
+    
+    <div class="sort-bar">
+        <div class="sort-options">
+            <span>Сортировка:</span>
+            <button class="sort-btn active" data-sort="default" onclick="setSort('default', this)">По умолчанию</button>
+            <button class="sort-btn" data-sort="price-asc" onclick="setSort('price-asc', this)">Дешевле</button>
+            <button class="sort-btn" data-sort="price-desc" onclick="setSort('price-desc', this)">Дороже</button>
+            <button class="sort-btn" data-sort="name" onclick="setSort('name', this)">По названию</button>
+        </div>
+        <div class="product-count" id="productCount"></div>
+    </div>
+    
+    <div class="product-grid" id="productGrid"></div>
+</main>
+
+<!-- CART SIDEBAR -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<aside class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+        <h2>Ваша корзина</h2>
+        <button class="cart-close" onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer" id="cartFooter"></div>
+</aside>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkoutModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Оформление заказа</h2>
+            <button class="cart-close" onclick="closeCheckout()">✕</button>
+        </div>
+        <div class="modal-body">
+            <form class="checkout-form" onsubmit="completeOrder(event)">
+                <div class="form-group">
+                    <label>Имя покупателя</label>
+                    <input type="text" id="customerName" required placeholder="Иван Иванов">
+                </div>
+                <div class="form-group">
+                    <label>Номер карты "Любимчик"</label>
+                    <input type="text" id="cardNumber" value="**** 4521" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Способ получения</label>
+                    <select id="deliveryMethod" onchange="updateDelivery()">
+                        <option value="self">Самовывоз (бесплатно)</option>
+                        <option value="delivery">Доставка курьером (+150 ₽)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Адрес доставки</label>
+                    <input type="text" id="address" placeholder="ул. Ленина, д. 10, кв. 5">
+                </div>
+                <div class="form-group">
+                    <label>Способ оплаты</label>
+                    <div class="payment-options">
+                        <div class="payment-option selected" onclick="selectPayment(this, 'balance')">С баланса</div>
+                        <div class="payment-option" onclick="selectPayment(this, 'bonus')">Бонусами</div>
+                        <div class="payment-option" onclick="selectPayment(this, 'card')">Картой</div>
+                        <div class="payment-option" onclick="selectPayment(this, 'cash')">Наличные</div>
+                    </div>
+                </div>
+                <div class="cart-summary" id="checkoutSummary"></div>
+                <button type="submit" class="checkout-btn">ОПЛАТИТЬ ЗАКАЗ</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- RECEIPT MODAL -->
+<div class="modal-overlay" id="receiptModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Кассовый чек</h2>
+            <button class="cart-close" onclick="closeReceipt()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="receipt" id="receiptContent"></div>
+            <button class="checkout-btn" style="margin-top:20px" onclick="closeReceipt()">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>О МАГАЗИНЕ</h4>
+            <p>Магазин самообслуживания "Магнит" - ваш надежный помощник в мире РП игры. Широкий ассортимент продуктов по доступным ценам.</p>
+        </div>
+        <div class="footer-section">
+            <h4>ПОКУПАТЕЛЯМ</h4>
+            <a href="#">Карта "Любимчик"</a>
+            <a href="#">Акции и скидки</a>
+            <a href="#">Программа лояльности</a>
+            <a href="#">Возврат товара</a>
+        </div>
+        <div class="footer-section">
+            <h4>КОНТАКТЫ</h4>
+            <p>Телефон: 8-800-200-90-02</p>
+            <p>Режим работы: 07:00 - 23:00</p>
+            <p>Адрес: ул. Игровая, д. 1</p>
+        </div>
+        <div class="footer-section">
+            <h4>ИНФОРМАЦИЯ</h4>
+            <p>Все товары сертифицированы</p>
+            <p>Срок годности соблюдается</p>
+            <p>Вернуть товар можно в течение 14 дней</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        (c) 2026 Магазин "Магнит" - РП игра. Все права защищены.
+    </div>
+</footer>
+
+<script>
+// ===== SVG ICONS FOR PRODUCTS =====
+const SVG = {
+    milk: '<svg viewBox="0 0 100 100"><rect x="30" y="20" width="40" height="70" rx="3" fill="#ffffff" stroke="#4a90e2" stroke-width="2"/><rect x="30" y="20" width="40" height="15" fill="#4a90e2"/><rect x="35" y="45" width="30" height="8" fill="#4a90e2"/><text x="50" y="52" text-anchor="middle" fill="white" font-size="6" font-weight="bold">МОЛОКО</text></svg>',
+    kefir: '<svg viewBox="0 0 100 100"><rect x="32" y="15" width="36" height="75" rx="4" fill="#e8f4f8" stroke="#2c5f7c" stroke-width="2"/><rect x="32" y="15" width="36" height="12" fill="#2c5f7c"/><circle cx="50" cy="55" r="12" fill="#2c5f7c"/><text x="50" y="59" text-anchor="middle" fill="white" font-size="6" font-weight="bold">КЕФИР</text></svg>',
+    cheese: '<svg viewBox="0 0 100 100"><path d="M 15 70 L 85 70 L 75 30 L 25 30 Z" fill="#ffd700" stroke="#d4a017" stroke-width="2"/><circle cx="35" cy="50" r="4" fill="#d4a017"/><circle cx="55" cy="55" r="5" fill="#d4a017"/><circle cx="70" cy="45" r="3" fill="#d4a017"/><circle cx="45" cy="60" r="3" fill="#d4a017"/></svg>',
+    butter: '<svg viewBox="0 0 100 100"><rect x="20" y="35" width="60" height="35" rx="3" fill="#fff9c4" stroke="#f9a825" stroke-width="2"/><rect x="20" y="35" width="60" height="10" fill="#f9a825"/><text x="50" y="58" text-anchor="middle" fill="#f9a825" font-size="8" font-weight="bold">МАСЛО</text></svg>',
+    yogurt: '<svg viewBox="0 0 100 100"><path d="M 30 30 L 70 30 L 65 80 L 35 80 Z" fill="#ff80ab" stroke="#c2185b" stroke-width="2"/><ellipse cx="50" cy="30" rx="20" ry="4" fill="#c2185b"/><rect x="38" y="50" width="24" height="6" fill="#c2185b"/></svg>',
+    sourcream: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="75" rx="28" ry="6" fill="#e0e0e0"/><path d="M 22 75 L 22 45 Q 22 35 32 35 L 68 35 Q 78 35 78 45 L 78 75" fill="#ffffff" stroke="#bdbdbd" stroke-width="2"/><ellipse cx="50" cy="35" rx="28" ry="5" fill="#f5f5f5" stroke="#bdbdbd" stroke-width="2"/></svg>',
+    cottagecheese: '<svg viewBox="0 0 100 100"><rect x="25" y="35" width="50" height="45" rx="3" fill="#fafafa" stroke="#9e9e9e" stroke-width="2"/><rect x="25" y="35" width="50" height="12" fill="#4caf50"/><text x="50" y="62" text-anchor="middle" fill="#4caf50" font-size="7" font-weight="bold">ТВОРОГ</text></svg>',
+    bread: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="35" ry="25" fill="#d4a574"/><ellipse cx="50" cy="50" rx="35" ry="22" fill="#e8c089"/><path d="M 25 45 Q 50 35 75 45" stroke="#8b5a2b" stroke-width="1.5" fill="none"/><path d="M 30 55 Q 50 48 70 55" stroke="#8b5a2b" stroke-width="1.5" fill="none"/></svg>',
+    baguette: '<svg viewBox="0 0 100 100"><path d="M 15 50 Q 15 40 25 40 L 80 45 Q 90 50 85 58 L 30 62 Q 15 60 15 50 Z" fill="#d4a574" stroke="#8b5a2b" stroke-width="2"/><line x1="30" y1="45" x2="35" y2="58" stroke="#8b5a2b" stroke-width="1"/><line x1="45" y1="46" x2="50" y2="59" stroke="#8b5a2b" stroke-width="1"/><line x1="60" y1="47" x2="65" y2="59" stroke="#8b5a2b" stroke-width="1"/></svg>',
+    croissant: '<svg viewBox="0 0 100 100"><path d="M 20 60 Q 15 40 35 35 Q 50 30 65 35 Q 85 40 80 60 Q 75 70 50 68 Q 25 70 20 60 Z" fill="#e8b86d" stroke="#a67c3d" stroke-width="2"/><path d="M 30 50 Q 50 45 70 50" stroke="#a67c3d" stroke-width="1.5" fill="none"/><path d="M 28 58 Q 50 53 72 58" stroke="#a67c3d" stroke-width="1.5" fill="none"/></svg>',
+    cookie: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="#d4a574" stroke="#8b5a2b" stroke-width="2"/><circle cx="40" cy="42" r="3" fill="#5d4037"/><circle cx="58" cy="45" r="3" fill="#5d4037"/><circle cx="48" cy="58" r="3" fill="#5d4037"/><circle cx="62" cy="60" r="3" fill="#5d4037"/><circle cx="38" cy="55" r="2" fill="#5d4037"/></svg>',
+    sausage: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="35" ry="15" fill="#c62828" stroke="#8b0000" stroke-width="2"/><ellipse cx="50" cy="48" rx="35" ry="13" fill="#e53935"/><circle cx="35" cy="48" r="2" fill="#ffcdd2"/><circle cx="50" cy="50" r="2" fill="#ffcdd2"/><circle cx="65" cy="48" r="2" fill="#ffcdd2"/></svg>',
+    chicken: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="25" ry="30" fill="#fff3e0" stroke="#ff8a65" stroke-width="2"/><path d="M 35 30 Q 50 20 65 30" fill="#ffccbc" stroke="#ff8a65" stroke-width="2"/><circle cx="42" cy="50" r="1.5" fill="#ff8a65"/><circle cx="58" cy="50" r="1.5" fill="#ff8a65"/><circle cx="50" cy="60" r="1.5" fill="#ff8a65"/></svg>',
+    meat: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="32" ry="22" fill="#c62828" stroke="#8b0000" stroke-width="2"/><path d="M 25 50 Q 50 40 75 50" fill="#ef5350"/><ellipse cx="65" cy="45" rx="8" ry="5" fill="#ffcdd2"/></svg>',
+    fish: '<svg viewBox="0 0 100 100"><ellipse cx="45" cy="50" rx="30" ry="15" fill="#90caf9" stroke="#1976d2" stroke-width="2"/><path d="M 75 50 L 90 40 L 90 60 Z" fill="#90caf9" stroke="#1976d2" stroke-width="2"/><circle cx="30" cy="47" r="2" fill="#1976d2"/><path d="M 40 55 Q 50 58 60 55" stroke="#1976d2" stroke-width="1" fill="none"/></svg>',
+    apple: '<svg viewBox="0 0 100 100"><circle cx="50" cy="55" r="28" fill="#e53935"/><path d="M 50 28 Q 52 20 58 22" stroke="#5d4037" stroke-width="2" fill="none"/><path d="M 55 25 Q 62 22 65 28" fill="#4caf50"/><ellipse cx="40" cy="45" rx="6" ry="10" fill="#ef5350" opacity="0.5"/></svg>',
+    banana: '<svg viewBox="0 0 100 100"><path d="M 25 70 Q 20 40 40 25 Q 60 15 75 30 Q 80 40 70 50 Q 55 45 40 55 Q 30 65 25 70 Z" fill="#fdd835" stroke="#f9a825" stroke-width="2"/><path d="M 25 70 L 22 75" stroke="#5d4037" stroke-width="2"/></svg>',
+    tomato: '<svg viewBox="0 0 100 100"><circle cx="50" cy="55" r="28" fill="#e53935"/><path d="M 40 30 L 45 25 L 50 28 L 55 25 L 60 30 L 55 32 L 50 30 L 45 32 Z" fill="#4caf50"/><ellipse cx="42" cy="48" rx="5" ry="8" fill="#ef5350" opacity="0.5"/></svg>',
+    cucumber: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="15" ry="35" fill="#66bb6a" stroke="#2e7d32" stroke-width="2"/><ellipse cx="45" cy="40" rx="2" ry="3" fill="#2e7d32"/><ellipse cx="55" cy="55" rx="2" ry="3" fill="#2e7d32"/><ellipse cx="48" cy="65" rx="2" ry="3" fill="#2e7d32"/></svg>',
+    potato: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="55" rx="30" ry="22" fill="#a1887f" stroke="#6d4c41" stroke-width="2"/><circle cx="38" cy="48" r="1.5" fill="#6d4c41"/><circle cx="55" cy="52" r="1.5" fill="#6d4c41"/><circle cx="62" cy="60" r="1.5" fill="#6d4c41"/><circle cx="45" cy="62" r="1.5" fill="#6d4c41"/></svg>',
+    carrot: '<svg viewBox="0 0 100 100"><path d="M 50 25 L 40 80 Q 50 85 60 80 Z" fill="#ff7043" stroke="#e64a19" stroke-width="2"/><path d="M 45 25 Q 40 15 35 18" stroke="#4caf50" stroke-width="3" fill="none"/><path d="M 50 25 Q 50 15 50 15" stroke="#4caf50" stroke-width="3" fill="none"/><path d="M 55 25 Q 60 15 65 18" stroke="#4caf50" stroke-width="3" fill="none"/><line x1="45" y1="45" x2="55" y2="45" stroke="#e64a19" stroke-width="1"/><line x1="44" y1="60" x2="56" y2="60" stroke="#e64a19" stroke-width="1"/></svg>',
+    onion: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="60" rx="28" ry="25" fill="#ffcc80" stroke="#ef6c00" stroke-width="2"/><path d="M 50 35 Q 48 25 45 20" stroke="#ef6c00" stroke-width="2" fill="none"/><path d="M 50 35 Q 52 25 55 20" stroke="#ef6c00" stroke-width="2" fill="none"/><ellipse cx="50" cy="60" rx="20" ry="18" fill="#ffe0b2" opacity="0.5"/></svg>',
+    water: '<svg viewBox="0 0 100 100"><rect x="35" y="25" width="30" height="65" rx="3" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" opacity="0.7"/><rect x="35" y="25" width="30" height="10" fill="#1976d2"/><path d="M 40 50 Q 50 45 60 50" stroke="#1976d2" stroke-width="1.5" fill="none"/></svg>',
+    juice: '<svg viewBox="0 0 100 100"><rect x="32" y="20" width="36" height="70" rx="3" fill="#ff9800" stroke="#e65100" stroke-width="2"/><rect x="32" y="20" width="36" height="15" fill="#e65100"/><circle cx="50" cy="55" r="10" fill="#fff3e0"/><circle cx="50" cy="55" r="7" fill="#ff9800"/></svg>',
+    cola: '<svg viewBox="0 0 100 100"><rect x="35" y="20" width="30" height="65" rx="3" fill="#c62828" stroke="#8b0000" stroke-width="2"/><rect x="35" y="20" width="30" height="8" fill="#8b0000"/><ellipse cx="50" cy="20" rx="15" ry="3" fill="#8b0000"/><path d="M 40 50 Q 50 45 60 50" stroke="white" stroke-width="2" fill="none"/></svg>',
+    tea: '<svg viewBox="0 0 100 100"><rect x="28" y="25" width="44" height="55" rx="3" fill="#4caf50" stroke="#2e7d32" stroke-width="2"/><rect x="28" y="25" width="44" height="12" fill="#2e7d32"/><text x="50" y="55" text-anchor="middle" fill="white" font-size="9" font-weight="bold">ЧАЙ</text><circle cx="50" cy="68" r="5" fill="#fff59d"/></svg>',
+    coffee: '<svg viewBox="0 0 100 100"><rect x="30" y="25" width="40" height="60" rx="3" fill="#5d4037" stroke="#3e2723" stroke-width="2"/><rect x="30" y="25" width="40" height="12" fill="#3e2723"/><ellipse cx="50" cy="55" rx="10" ry="8" fill="#fff3e0"/><ellipse cx="50" cy="55" rx="6" ry="5" fill="#5d4037"/></svg>',
+    chocolate: '<svg viewBox="0 0 100 100"><rect x="20" y="35" width="60" height="35" rx="2" fill="#6d4c41" stroke="#3e2723" stroke-width="2"/><rect x="20" y="35" width="60" height="8" fill="#3e2723"/><line x1="35" y1="43" x2="35" y2="70" stroke="#3e2723" stroke-width="1"/><line x1="50" y1="43" x2="50" y2="70" stroke="#3e2723" stroke-width="1"/><line x1="65" y1="43" x2="65" y2="70" stroke="#3e2723" stroke-width="1"/></svg>',
+    candy: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="20" ry="15" fill="#e91e63" stroke="#880e4f" stroke-width="2"/><path d="M 30 50 L 15 40 L 15 60 Z" fill="#f8bbd0" stroke="#880e4f" stroke-width="2"/><path d="M 70 50 L 85 40 L 85 60 Z" fill="#f8bbd0" stroke="#880e4f" stroke-width="2"/></svg>',
+    rice: '<svg viewBox="0 0 100 100"><path d="M 25 35 L 75 35 L 80 80 L 20 80 Z" fill="#ffffff" stroke="#9e9e9e" stroke-width="2"/><rect x="25" y="35" width="50" height="10" fill="#4caf50"/><text x="50" y="62" text-anchor="middle" fill="#4caf50" font-size="8" font-weight="bold">РИС</text></svg>',
+    pasta: '<svg viewBox="0 0 100 100"><rect x="25" y="20" width="50" height="65" rx="3" fill="#fff3e0" stroke="#ef6c00" stroke-width="2"/><rect x="25" y="20" width="50" height="12" fill="#ef6c00"/><path d="M 35 50 Q 50 45 65 50" stroke="#ef6c00" stroke-width="2" fill="none"/><path d="M 35 60 Q 50 55 65 60" stroke="#ef6c00" stroke-width="2" fill="none"/><path d="M 35 70 Q 50 65 65 70" stroke="#ef6c00" stroke-width="2" fill="none"/></svg>',
+    flour: '<svg viewBox="0 0 100 100"><path d="M 20 30 L 80 30 L 85 80 L 15 80 Z" fill="#fafafa" stroke="#9e9e9e" stroke-width="2"/><rect x="20" y="30" width="60" height="10" fill="#ff9800"/><text x="50" y="60" text-anchor="middle" fill="#ff9800" font-size="8" font-weight="bold">МУКА</text></svg>',
+    sugar: '<svg viewBox="0 0 100 100"><rect x="25" y="25" width="50" height="60" rx="3" fill="#ffffff" stroke="#2196f3" stroke-width="2"/><rect x="25" y="25" width="50" height="12" fill="#2196f3"/><text x="50" y="60" text-anchor="middle" fill="#2196f3" font-size="8" font-weight="bold">САХАР</text></svg>',
+    salt: '<svg viewBox="0 0 100 100"><rect x="35" y="20" width="30" height="70" rx="3" fill="#ffffff" stroke="#607d8b" stroke-width="2"/><rect x="35" y="20" width="30" height="10" fill="#607d8b"/><circle cx="42" cy="55" r="1.5" fill="#607d8b"/><circle cx="50" cy="60" r="1.5" fill="#607d8b"/><circle cx="58" cy="55" r="1.5" fill="#607d8b"/></svg>',
+    oil: '<svg viewBox="0 0 100 100"><rect x="35" y="25" width="30" height="65" rx="3" fill="#fff59d" stroke="#f57f17" stroke-width="2" opacity="0.7"/><rect x="35" y="25" width="30" height="10" fill="#f57f17"/><rect x="45" y="15" width="10" height="10" fill="#f57f17"/></svg>',
+    can: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="75" rx="22" ry="5" fill="#9e9e9e"/><rect x="28" y="30" width="44" height="45" fill="#bdbdbd" stroke="#616161" stroke-width="2"/><ellipse cx="50" cy="30" rx="22" ry="5" fill="#e0e0e0" stroke="#616161" stroke-width="2"/><rect x="28" y="45" width="44" height="15" fill="#f44336"/></svg>',
+    icecream: '<svg viewBox="0 0 100 100"><path d="M 35 50 L 50 85 L 65 50 Z" fill="#d4a574" stroke="#8b5a2b" stroke-width="2"/><ellipse cx="50" cy="45" rx="20" ry="15" fill="#fff3e0" stroke="#ff9800" stroke-width="2"/><circle cx="45" cy="40" r="3" fill="#e91e63"/><circle cx="55" cy="42" r="3" fill="#4caf50"/></svg>',
+    pelmeni: '<svg viewBox="0 0 100 100"><rect x="20" y="30" width="60" height="45" rx="3" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/><ellipse cx="35" cy="52" rx="8" ry="6" fill="#fff3e0" stroke="#8b5a2b" stroke-width="1"/><ellipse cx="50" cy="52" rx="8" ry="6" fill="#fff3e0" stroke="#8b5a2b" stroke-width="1"/><ellipse cx="65" cy="52" rx="8" ry="6" fill="#fff3e0" stroke="#8b5a2b" stroke-width="1"/></svg>',
+    powder: '<svg viewBox="0 0 100 100"><rect x="25" y="20" width="50" height="65" rx="3" fill="#2196f3" stroke="#0d47a1" stroke-width="2"/><rect x="25" y="20" width="50" height="12" fill="#0d47a1"/><text x="50" y="55" text-anchor="middle" fill="white" font-size="7" font-weight="bold">ПОРОШОК</text><circle cx="50" cy="68" r="6" fill="#ffeb3b"/></svg>',
+    soap: '<svg viewBox="0 0 100 100"><rect x="25" y="35" width="50" height="35" rx="8" fill="#e1bee7" stroke="#7b1fa2" stroke-width="2"/><ellipse cx="40" cy="50" rx="3" ry="2" fill="#f8bbd0"/><ellipse cx="55" cy="55" rx="3" ry="2" fill="#f8bbd0"/><ellipse cx="60" cy="45" rx="2" ry="1.5" fill="#f8bbd0"/></svg>',
+    shampoo: '<svg viewBox="0 0 100 100"><rect x="35" y="25" width="30" height="65" rx="5" fill="#4db6ac" stroke="#00695c" stroke-width="2"/><rect x="42" y="15" width="16" height="12" rx="2" fill="#00695c"/><rect x="35" y="50" width="30" height="10" fill="#00695c"/></svg>',
+    toothpaste: '<svg viewBox="0 0 100 100"><rect x="20" y="40" width="55" height="20" rx="3" fill="#42a5f5" stroke="#0d47a1" stroke-width="2"/><rect x="75" y="45" width="10" height="10" fill="#0d47a1"/><rect x="20" y="40" width="15" height="20" fill="#0d47a1"/></svg>',
+    chips: '<svg viewBox="0 0 100 100"><path d="M 25 25 L 75 25 L 80 85 L 20 85 Z" fill="#fdd835" stroke="#f57f17" stroke-width="2"/><path d="M 30 40 Q 50 35 70 40" stroke="#f57f17" stroke-width="2" fill="none"/><path d="M 28 55 Q 50 50 72 55" stroke="#f57f17" stroke-width="2" fill="none"/><path d="M 26 70 Q 50 65 74 70" stroke="#f57f17" stroke-width="2" fill="none"/></svg>',
+    eggs: '<svg viewBox="0 0 100 100"><rect x="20" y="35" width="60" height="45" rx="3" fill="#fff3e0" stroke="#ef6c00" stroke-width="2"/><ellipse cx="35" cy="50" rx="8" ry="10" fill="#fafafa" stroke="#bdbdbd" stroke-width="1"/><ellipse cx="50" cy="50" rx="8" ry="10" fill="#fafafa" stroke="#bdbdbd" stroke-width="1"/><ellipse cx="65" cy="50" rx="8" ry="10" fill="#fafafa" stroke="#bdbdbd" stroke-width="1"/><ellipse cx="42" cy="68" rx="8" ry="6" fill="#fafafa" stroke="#bdbdbd" stroke-width="1"/><ellipse cx="58" cy="68" rx="8" ry="6" fill="#fafafa" stroke="#bdbdbd" stroke-width="1"/></svg>',
+    honey: '<svg viewBox="0 0 100 100"><path d="M 30 30 L 70 30 L 75 80 L 25 80 Z" fill="#ffb300" stroke="#e65100" stroke-width="2" opacity="0.8"/><rect x="30" y="25" width="40" height="10" fill="#e65100"/><path d="M 40 50 Q 50 45 60 50" stroke="#e65100" stroke-width="1.5" fill="none"/></svg>',
+    jam: '<svg viewBox="0 0 100 100"><path d="M 25 35 L 75 35 L 78 80 L 22 80 Z" fill="#c62828" stroke="#8b0000" stroke-width="2" opacity="0.8"/><rect x="25" y="30" width="50" height="10" fill="#8b0000"/><circle cx="50" cy="55" r="8" fill="#ffcdd2"/></svg>',
+    pepper: '<svg viewBox="0 0 100 100"><path d="M 50 25 Q 30 30 25 50 Q 25 75 50 80 Q 75 75 75 50 Q 70 30 50 25 Z" fill="#f44336" stroke="#b71c1c" stroke-width="2"/><path d="M 50 25 Q 52 18 55 15" stroke="#4caf50" stroke-width="3" fill="none"/></svg>',
+    lemon: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="28" ry="22" fill="#fdd835" stroke="#f9a825" stroke-width="2"/><ellipse cx="40" cy="45" rx="5" ry="8" fill="#fff59d" opacity="0.6"/></svg>',
+    orange: '<svg viewBox="0 0 100 100"><circle cx="50" cy="55" r="28" fill="#ff9800" stroke="#e65100" stroke-width="2"/><circle cx="50" cy="30" r="3" fill="#4caf50"/><ellipse cx="42" cy="48" rx="5" ry="8" fill="#ffb74d" opacity="0.5"/></svg>',
+    wine: '<svg viewBox="0 0 100 100"><path d="M 45 75 L 55 75 L 55 85 L 45 85 Z" fill="#4a148c"/><ellipse cx="50" cy="87" rx="15" ry="3" fill="#4a148c"/><path d="M 35 30 Q 35 55 50 55 Q 65 55 65 30 Z" fill="#6a1b9a" stroke="#4a148c" stroke-width="2"/><rect x="47" y="55" width="6" height="20" fill="#4a148c"/></svg>',
+    beer: '<svg viewBox="0 0 100 100"><rect x="35" y="20" width="30" height="65" rx="3" fill="#f9a825" stroke="#f57f17" stroke-width="2" opacity="0.8"/><rect x="35" y="20" width="30" height="10" fill="#f57f17"/><ellipse cx="50" cy="20" rx="15" ry="3" fill="#f57f17"/><rect x="35" y="45" width="30" height="15" fill="#ffffff"/></svg>',
+    mayo: '<svg viewBox="0 0 100 100"><rect x="30" y="25" width="40" height="60" rx="3" fill="#ffffff" stroke="#fbc02d" stroke-width="2"/><rect x="30" y="25" width="40" height="12" fill="#fbc02d"/><text x="50" y="58" text-anchor="middle" fill="#fbc02d" font-size="7" font-weight="bold">МАЙО</text></svg>',
+    ketchup: '<svg viewBox="0 0 100 100"><rect x="35" y="25" width="30" height="60" rx="3" fill="#c62828" stroke="#8b0000" stroke-width="2"/><rect x="35" y="25" width="30" height="10" fill="#8b0000"/><rect x="45" y="15" width="10" height="10" fill="#8b0000"/></svg>',
+    default: '<svg viewBox="0 0 100 100"><rect x="25" y="25" width="50" height="50" rx="5" fill="#e0e0e0" stroke="#9e9e9e" stroke-width="2"/><circle cx="50" cy="50" r="10" fill="#9e9e9e"/></svg>'
+};
+
+// ===== PRODUCT DATABASE =====
+const products = [
+    // Молочные продукты
+    { id: 1, name: 'Молоко "Простоквашино" 2.5%', weight: '930 мл', price: 89, oldPrice: 109, category: 'dairy', icon: 'milk', badge: 'hit' },
+    { id: 2, name: 'Молоко "Домик в деревне" 3.2%', weight: '950 мл', price: 95, category: 'dairy', icon: 'milk' },
+    { id: 3, name: 'Молоко "Вкуснотеево" топлёное', weight: '900 мл', price: 105, category: 'dairy', icon: 'milk' },
+    { id: 4, name: 'Кефир "Простоквашино" 1%', weight: '930 мл', price: 79, oldPrice: 99, category: 'dairy', icon: 'kefir', badge: 'sale' },
+    { id: 5, name: 'Кефир "Домик в деревне" 2.5%', weight: '900 мл', price: 85, category: 'dairy', icon: 'kefir' },
+    { id: 6, name: 'Сметана "Простоквашино" 20%', weight: '300 г', price: 75, category: 'dairy', icon: 'sourcream' },
+    { id: 7, name: 'Сметана "Домик в деревне" 25%', weight: '350 г', price: 95, category: 'dairy', icon: 'sourcream' },
+    { id: 8, name: 'Творог "Простоквашино" 5%', weight: '220 г', price: 89, category: 'dairy', icon: 'cottagecheese' },
+    { id: 9, name: 'Творог "Домик в деревне" 9%', weight: '200 г', price: 99, category: 'dairy', icon: 'cottagecheese' },
+    { id: 10, name: 'Сыр "Российский" 50%', weight: '200 г', price: 189, oldPrice: 229, category: 'dairy', icon: 'cheese', badge: 'sale' },
+    { id: 11, name: 'Сыр "Голландский" 45%', weight: '200 г', price: 175, category: 'dairy', icon: 'cheese' },
+    { id: 12, name: 'Сыр "Моцарелла"', weight: '125 г', price: 159, category: 'dairy', icon: 'cheese', badge: 'new' },
+    { id: 13, name: 'Масло сливочное "Простоквашино" 82%', weight: '180 г', price: 149, category: 'dairy', icon: 'butter' },
+    { id: 14, name: 'Масло "Крестьянское" 72.5%', weight: '200 г', price: 129, category: 'dairy', icon: 'butter' },
+    { id: 15, name: 'Йогурт "Чудо" клубника', weight: '290 г', price: 55, category: 'dairy', icon: 'yogurt' },
+    { id: 16, name: 'Йогурт "Активиа" черника', weight: '150 г', price: 49, category: 'dairy', icon: 'yogurt' },
+    { id: 17, name: 'Йогурт "Тема" банан', weight: '100 г', price: 29, category: 'dairy', icon: 'yogurt' },
+    { id: 18, name: 'Ряженка "Простоквашино" 4%', weight: '500 мл', price: 65, category: 'dairy', icon: 'kefir' },
+    
+    // Хлеб и выпечка
+    { id: 19, name: 'Хлеб "Бородинский"', weight: '400 г', price: 49, category: 'bread', icon: 'bread' },
+    { id: 20, name: 'Хлеб "Дарницкий"', weight: '500 г', price: 45, category: 'bread', icon: 'bread' },
+    { id: 21, name: 'Батон нарезной', weight: '400 г', price: 39, category: 'bread', icon: 'baguette' },
+    { id: 22, name: 'Багет французский', weight: '250 г', price: 59, category: 'bread', icon: 'baguette', badge: 'new' },
+    { id: 23, name: 'Булочки сдобные', weight: '6 шт', price: 69, category: 'bread', icon: 'croissant' },
+    { id: 24, name: 'Круассан с шоколадом', weight: '70 г', price: 45, category: 'bread', icon: 'croissant' },
+    { id: 25, name: 'Печенье "Юбилейное"', weight: '121 г', price: 69, category: 'bread', icon: 'cookie' },
+    { id: 26, name: 'Печенье "Ореховое"', weight: '150 г', price: 79, category: 'bread', icon: 'cookie' },
+    { id: 27, name: 'Пирожки с капустой', weight: '4 шт', price: 89, category: 'bread', icon: 'bread' },
+    { id: 28, name: 'Лаваш тонкий', weight: '200 г', price: 55, category: 'bread', icon: 'baguette' },
+    { id: 29, name: 'Сухари ржаные', weight: '150 г', price: 45, category: 'bread', icon: 'cookie' },
+    { id: 30, name: 'Хлебцы "Dr. Korner"', weight: '100 г', price: 89, category: 'bread', icon: 'cookie', badge: 'new' },
+    
+    // Мясные продукты
+    { id: 31, name: 'Курица охлажденная', weight: '1 кг', price: 249, oldPrice: 299, category: 'meat', icon: 'chicken', badge: 'sale' },
+    { id: 32, name: 'Куриное филе', weight: '500 г', price: 199, category: 'meat', icon: 'chicken' },
+    { id: 33, name: 'Окорочка куриные', weight: '800 г', price: 189, category: 'meat', icon: 'chicken' },
+    { id: 34, name: 'Свинина шейка', weight: '500 г', price: 299, category: 'meat', icon: 'meat' },
+    { id: 35, name: 'Говядина вырезка', weight: '500 г', price: 449, category: 'meat', icon: 'meat' },
+    { id: 36, name: 'Фарш "Домашний"', weight: '400 г', price: 229, category: 'meat', icon: 'meat' },
+    { id: 37, name: 'Колбаса "Докторская"', weight: '400 г', price: 199, oldPrice: 249, category: 'meat', icon: 'sausage', badge: 'hit' },
+    { id: 38, name: 'Колбаса "Сервелат"', weight: '300 г', price: 249, category: 'meat', icon: 'sausage' },
+    { id: 39, name: 'Сосиски "Молочные"', weight: '420 г', price: 159, category: 'meat', icon: 'sausage' },
+    { id: 40, name: 'Сосиски "Франкфуртские"', weight: '380 г', price: 189, category: 'meat', icon: 'sausage' },
+    { id: 41, name: 'Сёмга слабосолёная', weight: '200 г', price: 399, category: 'meat', icon: 'fish', badge: 'new' },
+    { id: 42, name: 'Скумбрия холодного копчения', weight: '300 г', price: 249, category: 'meat', icon: 'fish' },
+    
+    // Овощи и фрукты
+    { id: 43, name: 'Яблоки "Голден"', weight: '1 кг', price: 89, category: 'fruits', icon: 'apple' },
+    { id: 44, name: 'Яблоки "Фуджи"', weight: '1 кг', price: 129, category: 'fruits', icon: 'apple' },
+    { id: 45, name: 'Бананы', weight: '1 кг', price: 79, oldPrice: 99, category: 'fruits', icon: 'banana', badge: 'sale' },
+    { id: 46, name: 'Апельсины', weight: '1 кг', price: 119, category: 'fruits', icon: 'orange' },
+    { id: 47, name: 'Лимоны', weight: '1 кг', price: 169, category: 'fruits', icon: 'lemon' },
+    { id: 48, name: 'Помидоры "Черри"', weight: '250 г', price: 99, category: 'vegetables', icon: 'tomato' },
+    { id: 49, name: 'Помидоры "Розовые"', weight: '1 кг', price: 179, category: 'vegetables', icon: 'tomato' },
+    { id: 50, name: 'Огурцы грунтовые', weight: '1 кг', price: 129, category: 'vegetables', icon: 'cucumber' },
+    { id: 51, name: 'Огурцы тепличные', weight: '500 г', price: 89, category: 'vegetables', icon: 'cucumber' },
+    { id: 52, name: 'Картофель молодой', weight: '1 кг', price: 59, category: 'vegetables', icon: 'potato' },
+    { id: 53, name: 'Морковь', weight: '1 кг', price: 45, category: 'vegetables', icon: 'carrot' },
+    { id: 54, name: 'Лук репчатый', weight: '1 кг', price: 39, category: 'vegetables', icon: 'onion' },
+    { id: 55, name: 'Перец болгарский красный', weight: '1 кг', price: 249, category: 'vegetables', icon: 'pepper', badge: 'new' },
+    { id: 56, name: 'Перец болгарский жёлтый', weight: '1 кг', price: 229, category: 'vegetables', icon: 'pepper' },
+    { id: 57, name: 'Капуста белокочанная', weight: '1 кг', price: 35, category: 'vegetables', icon: 'cabbage' },
+    { id: 58, name: 'Свёкла', weight: '1 кг', price: 49, category: 'vegetables', icon: 'potato' },
+    
+    // Напитки
+    { id: 59, name: 'Вода "BonAqua" без газа', weight: '1.5 л', price: 69, category: 'drinks', icon: 'water' },
+    { id: 60, name: 'Вода "BonAqua" газированная', weight: '1.5 л', price: 69, category: 'drinks', icon: 'water' },
+    { id: 61, name: 'Вода "Святой источник"', weight: '5 л', price: 119, category: 'drinks', icon: 'water' },
+    { id: 62, name: 'Сок "Добрый" апельсиновый', weight: '1 л', price: 99, category: 'drinks', icon: 'juice' },
+    { id: 63, name: 'Сок "Rich" яблочный', weight: '1 л', price: 119, category: 'drinks', icon: 'juice' },
+    { id: 64, name: 'Сок "Фруктовый сад" вишнёвый', weight: '950 мл', price: 89, category: 'drinks', icon: 'juice' },
+    { id: 65, name: 'Coca-Cola', weight: '1 л', price: 89, oldPrice: 109, category: 'drinks', icon: 'cola', badge: 'hit' },
+    { id: 66, name: 'Pepsi', weight: '1.5 л', price: 99, category: 'drinks', icon: 'cola' },
+    { id: 67, name: 'Fanta апельсин', weight: '1 л', price: 85, category: 'drinks', icon: 'cola' },
+    { id: 68, name: 'Sprite', weight: '1 л', price: 85, category: 'drinks', icon: 'cola' },
+    { id: 69, name: 'Чай "Greenfield" Earl Grey', weight: '100 пак', price: 189, category: 'drinks', icon: 'tea' },
+    { id: 70, name: 'Чай "Lipton" чёрный', weight: '100 пак', price: 169, category: 'drinks', icon: 'tea' },
+    { id: 71, name: 'Чай "Greenfield" зелёный', weight: '25 пак', price: 89, category: 'drinks', icon: 'tea' },
+    { id: 72, name: 'Кофе "Jardin" Arabia', weight: '250 г', price: 349, category: 'drinks', icon: 'coffee' },
+    { id: 73, name: 'Кофе "Lavazza"', weight: '250 г', price: 429, category: 'drinks', icon: 'coffee' },
+    { id: 74, name: 'Кофе "Paulig" Arabica', weight: '250 г', price: 299, category: 'drinks', icon: 'coffee' },
+    { id: 75, name: 'Лимонад "Дюшес"', weight: '1 л', price: 69, category: 'drinks', icon: 'juice' },
+    
+    // Сладости
+    { id: 76, name: 'Шоколад "Alpen Gold" молочный', weight: '85 г', price: 89, category: 'sweets', icon: 'chocolate' },
+    { id: 77, name: 'Шоколад "Milka"', weight: '90 г', price: 99, oldPrice: 129, category: 'sweets', icon: 'chocolate', badge: 'sale' },
+    { id: 78, name: 'Шоколад "Ameте" тёмный 75%', weight: '90 г', price: 109, category: 'sweets', icon: 'chocolate' },
+    { id: 79, name: 'Шоколад "Ritter Sport"', weight: '100 г', price: 139, category: 'sweets', icon: 'chocolate' },
+    { id: 80, name: 'Конфеты "Коровка"', weight: '250 г', price: 159, category: 'sweets', icon: 'candy', badge: 'hit' },
+    { id: 81, name: 'Конфеты "Мишка косолапый"', weight: '250 г', price: 189, category: 'sweets', icon: 'candy' },
+    { id: 82, name: 'Конфеты "Рафаэлло"', weight: '150 г', price: 299, category: 'sweets', icon: 'candy' },
+    { id: 83, name: 'Мармелад "Haribo"', weight: '200 г', price: 129, category: 'sweets', icon: 'candy' },
+    { id: 84, name: 'Зефир "Шармэль"', weight: '255 г', price: 119, category: 'sweets', icon: 'candy' },
+    { id: 85, name: 'Вафли "Яшкино"', weight: '200 г', price: 79, category: 'sweets', icon: 'chocolate' },
+    { id: 86, name: 'Пряники "Тульские"', weight: '200 г', price: 69, category: 'sweets', icon: 'cookie' },
+    { id: 87, name: 'Пастила "Белёвская"', weight: '175 г', price: 149, category: 'sweets', icon: 'candy', badge: 'new' },
+    
+    // Бакалея
+    { id: 88, name: 'Рис "Мистраль" круглозёрный', weight: '900 г', price: 99, category: 'grocery', icon: 'rice' },
+    { id: 89, name: 'Рис "Басмати"', weight: '500 г', price: 129, category: 'grocery', icon: 'rice' },
+    { id: 90, name: 'Гречка "Увелка"', weight: '800 г', price: 89, oldPrice: 109, category: 'grocery', icon: 'rice', badge: 'sale' },
+    { id: 91, name: 'Макароны "Barilla" спагетти', weight: '500 г', price: 129, category: 'grocery', icon: 'pasta' },
+    { id: 92, name: 'Макароны "Макфа" перья', weight: '450 г', price: 69, category: 'grocery', icon: 'pasta' },
+    { id: 93, name: 'Мука "Макфа" в/с', weight: '2 кг', price: 99, category: 'grocery', icon: 'flour' },
+    { id: 94, name: 'Сахар "Русский кристалл"', weight: '1 кг', price: 79, category: 'grocery', icon: 'sugar' },
+    { id: 95, name: 'Соль "Экстра"', weight: '1 кг', price: 29, category: 'grocery', icon: 'salt' },
+    { id: 96, name: 'Масло подсолнечное "Золотая семечка"', weight: '1 л', price: 139, category: 'grocery', icon: 'oil' },
+    { id: 97, name: 'Масло оливковое "Maestro de Oliva"', weight: '500 мл', price: 399, category: 'grocery', icon: 'oil' },
+    { id: 98, name: 'Мёд "Дары Пчелы" липовый', weight: '350 г', price: 249, category: 'grocery', icon: 'honey' },
+    { id: 99, name: 'Варенье "Фруто Няня" клубника', weight: '340 г', price: 159, category: 'grocery', icon: 'jam' },
+    { id: 100, name: 'Майонез "Слобода" провансаль', weight: '400 мл', price: 99, category: 'grocery', icon: 'mayo' },
+    { id: 101, name: 'Кетчуп "Heinz" томатный', weight: '350 г', price: 129, category: 'grocery', icon: 'ketchup' },
+    
+    // Консервы
+    { id: 102, name: 'Тушёнка говяжья в/с', weight: '330 г', price: 199, category: 'canned', icon: 'can' },
+    { id: 103, name: 'Горошек зелёный "Бондюэль"', weight: '425 г', price: 89, category: 'canned', icon: 'can' },
+    { id: 104, name: 'Кукуруза "Бондюэль"', weight: '340 г', price: 99, category: 'canned', icon: 'can' },
+    { id: 105, name: 'Сайра натуральная', weight: '240 г', price: 99, category: 'canned', icon: 'can' },
+    { id: 106, name: 'Шпроты в масле', weight: '160 г', price: 129, category: 'canned', icon: 'can' },
+    { id: 107, name: 'Томатная паста "Помидорка"', weight: '350 г', price: 79, category: 'canned', icon: 'can' },
+    { id: 108, name: 'Огурцы маринованные', weight: '720 г', price: 149, category: 'canned', icon: 'can', badge: 'hit' },
+    { id: 109, name: 'Фасоль "Heinz" в томате', weight: '415 г', price: 109, category: 'canned', icon: 'can' },
+    
+    // Заморозка
+    { id: 110, name: 'Пельмени "Сибирская коллекция"', weight: '800 г', price: 299, oldPrice: 379, category: 'frozen', icon: 'pelmeni', badge: 'sale' },
+    { id: 111, name: 'Пельмени "Цезарь"', weight: '500 г', price: 189, category: 'frozen', icon: 'pelmeni' },
+    { id: 112, name: 'Вареники с вишней', weight: '500 г', price: 159, category: 'frozen', icon: 'pelmeni' },
+    { id: 113, name: 'Мороженое "48 копеек" пломбир', weight: '70 г', price: 59, category: 'frozen', icon: 'icecream', badge: 'hit' },
+    { id: 114, name: 'Мороженое "Магнат"', weight: '75 г', price: 99, category: 'frozen', icon: 'icecream' },
+    { id: 115, name: 'Мороженое "Инмарко" family', weight: '420 г', price: 229, category: 'frozen', icon: 'icecream' },
+    { id: 116, name: 'Овощная смесь "4 сезона"', weight: '400 г', price: 149, category: 'frozen', icon: 'pelmeni' },
+    { id: 117, name: 'Рыба замороженная минтай', weight: '800 г', price: 199, category: 'frozen', icon: 'fish' },
+    
+    // Бытовая химия
+    { id: 118, name: 'Стиральный порошок "Tide"', weight: '3 кг', price: 449, category: 'household', icon: 'powder' },
+    { id: 119, name: 'Стиральный порошок "Ariel"', weight: '3 кг', price: 499, category: 'household', icon: 'powder' },
+    { id: 120, name: 'Гель для стирки "Losk"', weight: '1.5 л', price: 299, category: 'household', icon: 'powder' },
+    { id: 121, name: 'Средство для мытья посуды "Fairy"', weight: '900 мл', price: 159, category: 'household', icon: 'powder' },
+    { id: 122, name: 'Средство "Domestos"', weight: '1 л', price: 199, category: 'household', icon: 'powder' },
+    { id: 123, name: 'Спрей "Cillit Bang"', weight: '500 мл', price: 249, category: 'household', icon: 'powder' },
+    { id: 124, name: 'Губки хозяйственные', weight: '5 шт', price: 59, category: 'household', icon: 'soap' },
+    { id: 125, name: 'Мешки для мусора', weight: '30 шт', price: 79, category: 'household', icon: 'soap' },
+    
+    // Гигиена
+    { id: 126, name: 'Зубная паста "Colgate"', weight: '100 мл', price: 129, category: 'hygiene', icon: 'toothpaste' },
+    { id: 127, name: 'Зубная паста "Blend-a-med"', weight: '75 мл', price: 99, category: 'hygiene', icon: 'toothpaste' },
+    { id: 128, name: 'Шампунь "Head & Shoulders"', weight: '400 мл', price: 299, category: 'hygiene', icon: 'shampoo' },
+    { id: 129, name: 'Шампунь "Pantene Pro-V"', weight: '400 мл', price: 329, category: 'hygiene', icon: 'shampoo' },
+    { id: 130, name: 'Гель для душа "Nivea"', weight: '250 мл', price: 199, category: 'hygiene', icon: 'shampoo' },
+    { id: 131, name: 'Мыло "Dove" крем-мыло', weight: '135 г', price: 79, category: 'hygiene', icon: 'soap' },
+    { id: 132, name: 'Мыло "Safeguard"', weight: '90 г', price: 49, category: 'hygiene', icon: 'soap' },
+    { id: 133, name: 'Дезодорант "Old Spice"', weight: '150 мл', price: 249, category: 'hygiene', icon: 'shampoo' },
+    { id: 134, name: 'Дезодорант "Nivea"', weight: '150 мл', price: 229, category: 'hygiene', icon: 'shampoo' },
+    
+    // Снеки
+    { id: 135, name: 'Чипсы "Lays" классические', weight: '140 г', price: 129, category: 'snacks', icon: 'chips' },
+    { id: 136, name: 'Чипсы "Lays" с беконом', weight: '140 г', price: 129, category: 'snacks', icon: 'chips' },
+    { id: 137, name: 'Чипсы "Pringles" оригинальные', weight: '165 г', price: 189, category: 'snacks', icon: 'chips', badge: 'hit' },
+    { id: 138, name: 'Орешки "ХрусTeam" арахис', weight: '120 г', price: 79, category: 'snacks', icon: 'chips' },
+    { id: 139, name: 'Семечки "Бабкины"', weight: '150 г', price: 69, category: 'snacks', icon: 'chips' },
+    { id: 140, name: 'Сухарики "Кириешки"', weight: '100 г', price: 45, category: 'snacks', icon: 'chips' },
+    { id: 141, name: 'Попкорн "Act II" карамель', weight: '90 г', price: 89, category: 'snacks', icon: 'chips' },
+    { id: 142, name: 'Крендельки солью', weight: '150 г', price: 69, category: 'snacks', icon: 'chips' },
+    
+    // Яйца
+    { id: 143, name: 'Яйца куриные С1', weight: '10 шт', price: 99, oldPrice: 119, category: 'dairy', icon: 'eggs', badge: 'sale' },
+    { id: 144, name: 'Яйца куриные С0', weight: '10 шт', price: 129, category: 'dairy', icon: 'eggs' },
+    
+    // Напитки доп
+    { id: 145, name: 'Пиво "Балтика 7"', weight: '0.5 л', price: 89, category: 'drinks', icon: 'beer' },
+    { id: 146, name: 'Пиво "Heineken"', weight: '0.5 л', price: 119, category: 'drinks', icon: 'beer' },
+    { id: 147, name: 'Вино "Архалык" красное', weight: '0.75 л', price: 349, category: 'drinks', icon: 'wine' },
+    { id: 148, name: 'Вино "Chateau Tamagne"', weight: '0.75 л', price: 449, category: 'drinks', icon: 'wine' }
+];
+
+// ===== CATEGORIES =====
+const categories = [
+    { id: 'all', name: 'Все товары' },
+    { id: 'dairy', name: 'Молочные продукты' },
+    { id: 'bread', name: 'Хлеб и выпечка' },
+    { id: 'meat', name: 'Мясо и колбасы' },
+    { id: 'fruits', name: 'Фрукты' },
+    { id: 'vegetables', name: 'Овощи' },
+    { id: 'drinks', name: 'Напитки' },
+    { id: 'sweets', name: 'Сладости' },
+    { id: 'grocery', name: 'Бакалея' },
+    { id: 'canned', name: 'Консервы' },
+    { id: 'frozen', name: 'Заморозка' },
+    { id: 'household', name: 'Бытовая химия' },
+    { id: 'hygiene', name: 'Гигиена' },
+    { id: 'snacks', name: 'Снеки' }
+];
+
+// ===== STATE =====
+let state = {
+    cart: [],
+    currentCategory: 'all',
+    currentSort: 'default',
+    searchQuery: '',
+    balance: 5000,
+    bonus: 150,
+    paymentMethod: 'balance',
+    deliveryMethod: 'self',
+    orderHistory: []
+};
+
+// ===== INIT =====
+function init() {
+    renderCategories();
+    renderProducts();
+    updateCart();
+}
+
+// ===== RENDER CATEGORIES =====
+function renderCategories() {
+    const nav = document.getElementById('categoriesNav');
+    nav.innerHTML = categories.map(cat => `
+        <button class="category-btn ${cat.id === state.currentCategory ? 'active' : ''}" 
+                onclick="selectCategory('${cat.id}')">
+            ${cat.name}
+        </button>
+    `).join('');
+}
+
+// ===== SELECT CATEGORY =====
+function selectCategory(catId) {
+    state.currentCategory = catId;
+    renderCategories();
+    renderProducts();
+    const cat = categories.find(c => c.id === catId);
+    document.getElementById('sectionTitle').textContent = cat.name;
+}
+
+// ===== RESET FILTERS =====
+function resetFilters() {
+    state.currentCategory = 'all';
+    state.searchQuery = '';
+    document.getElementById('searchInput').value = '';
+    document.getElementById('sectionTitle').textContent = 'Все товары';
+    renderCategories();
+    renderProducts();
+}
+
+// ===== SEARCH =====
+function handleSearch() {
+    state.searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+    renderProducts();
+}
+
+// ===== SORT =====
+function setSort(sort, btn) {
+    state.currentSort = sort;
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderProducts();
+}
+
+// ===== RENDER PRODUCTS =====
+function renderProducts() {
+    let filtered = products.filter(p => {
+        const matchCategory = state.currentCategory === 'all' || p.category === state.currentCategory;
+        const matchSearch = !state.searchQuery || p.name.toLowerCase().includes(state.searchQuery);
+        return matchCategory && matchSearch;
+    });
+    
+    // Sort
+    if (state.currentSort === 'price-asc') {
+        filtered.sort((a, b) => a.price - b.price);
+    } else if (state.currentSort === 'price-desc') {
+        filtered.sort((a, b) => b.price - a.price);
+    } else if (state.currentSort === 'name') {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    
+    document.getElementById('productCount').textContent = `Найдено: ${filtered.length} товаров`;
+    
+    const grid = document.getElementById('productGrid');
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: #888;">
+                <div style="font-size: 60px; margin-bottom: 15px;">∅</div>
+                <div style="font-size: 18px; font-weight: 600;">Товары не найдены</div>
+                <div style="margin-top: 8px;">Попробуйте изменить параметры поиска</div>
+            </div>
+        `;
+        return;
+    }
+    
+    grid.innerHTML = filtered.map(p => {
+        const cartItem = state.cart.find(i => i.id === p.id);
+        const qty = cartItem ? cartItem.qty : 0;
+        const badgeHtml = p.badge ? `<div class="product-badge ${p.badge}">${getBadgeText(p.badge)}</div>` : '';
+        const oldPriceHtml = p.oldPrice ? `<span class="product-price-old">${p.oldPrice} ₽</span>` : '';
+        
+        return `
+            <div class="product-card">
+                ${badgeHtml}
+                <div class="product-image">
+                    ${SVG[p.icon] || SVG.default}
+                </div>
+                <div class="product-info">
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-weight">${p.weight}</div>
+                    <div class="product-price-row">
+                        <span class="product-price">${p.price}<span class="product-price-currency"> ₽</span></span>
+                        ${oldPriceHtml}
+                    </div>
+                    ${qty === 0 
+                        ? `<button class="add-to-cart-btn" onclick="addToCart(${p.id})">В корзину</button>`
+                        : `<div class="quantity-control">
+                            <button onclick="changeQty(${p.id}, -1)">−</button>
+                            <span>${qty}</span>
+                            <button onclick="changeQty(${p.id}, 1)">+</button>
+                          </div>`
+                    }
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ===== BADGE TEXT =====
+function getBadgeText(badge) {
+    const texts = {
+        'sale': 'СКИДКА',
+        'new': 'НОВИНКА',
+        'hit': 'ХИТ'
+    };
+    return texts[badge] || '';
+}
+
+// ===== ADD TO CART =====
+function addToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    
+    const existing = state.cart.find(i => i.id === productId);
+    if (existing) {
+        existing.qty++;
+    } else {
+        state.cart.push({ id: productId, qty: 1 });
+    }
+    
+    updateCart();
+    renderProducts();
+    showToast(`${product.name} добавлен в корзину`, 'success');
+}
+
+// ===== CHANGE QTY =====
+function changeQty(productId, delta) {
+    const item = state.cart.find(i => i.id === productId);
+    if (!item) return;
+    
+    item.qty += delta;
+    if (item.qty <= 0) {
+        state.cart = state.cart.filter(i => i.id !== productId);
+    }
+    
+    updateCart();
+    renderProducts();
+}
+
+// ===== UPDATE CART =====
+function updateCart() {
+    const totalItems = state.cart.reduce((sum, i) => sum + i.qty, 0);
+    document.getElementById('cartCount').textContent = totalItems;
+    
+    const cartItemsEl = document.getElementById('cartItems');
+    const cartFooterEl = document.getElementById('cartFooter');
+    
+    if (state.cart.length === 0) {
+        cartItemsEl.innerHTML = `
+            <div class="cart-empty">
+                <svg class="cart-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Корзина пуста</div>
+                <div>Добавьте товары из каталога</div>
+            </div>
+        `;
+        cartFooterEl.innerHTML = '';
+        return;
+    }
+    
+    cartItemsEl.innerHTML = state.cart.map(item => {
+        const product = products.find(p => p.id === item.id);
+        const total = product.price * item.qty;
+        return `
+            <div class="cart-item">
+                <div class="cart-item-image">
+                    ${SVG[product.icon] || SVG.default}
+                </div>
+                <div class="cart-item-info">
+                    <div class="cart-item-name">${product.name}</div>
+                    <div class="cart-item-price">${product.price} ₽ × ${item.qty}</div>
+                </div>
+                <div class="cart-item-controls">
+                    <button onclick="changeQty(${item.id}, -1)">−</button>
+                    <span>${item.qty}</span>
+                    <button onclick="changeQty(${item.id}, 1)">+</button>
+                </div>
+                <div class="cart-item-total">${total} ₽</div>
+            </div>
+        `;
+    }).join('');
+    
+    const subtotal = getSubtotal();
+    const delivery = state.deliveryMethod === 'delivery' ? 150 : 0;
+    const total = subtotal + delivery;
+    const bonusEarned = Math.floor(total * 0.05);
+    
+    cartFooterEl.innerHTML = `
+        <div class="cart-summary">
+            <div class="cart-summary-row">
+                <span>Товары (${totalItems}):</span>
+                <span>${subtotal} ₽</span>
+            </div>
+            <div class="cart-summary-row">
+                <span>Доставка:</span>
+                <span>${delivery === 0 ? 'Бесплатно' : delivery + ' ₽'}</span>
+            </div>
+            <div class="cart-summary-row">
+                <span>Начислим бонусов:</span>
+                <span class="bonus-earned">+${bonusEarned}</span>
+            </div>
+            <div class="cart-summary-row total">
+                <span>Итого:</span>
+                <span>${total} ₽</span>
+            </div>
+        </div>
+        <button class="checkout-btn" onclick="openCheckout()">ОФОРМИТЬ ЗАКАЗ</button>
+    `;
+}
+
+// ===== GET SUBTOTAL =====
+function getSubtotal() {
+    return state.cart.reduce((sum, item) => {
+        const product = products.find(p => p.id === item.id);
+        return sum + product.price * item.qty;
+    }, 0);
+}
+
+// ===== TOGGLE CART =====
+function toggleCart() {
+    document.getElementById('cartSidebar').classList.toggle('open');
+    document.getElementById('cartOverlay').classList.toggle('open');
+}
+
+// ===== OPEN CHECKOUT =====
+function openCheckout() {
+    if (state.cart.length === 0) return;
+    toggleCart();
+    document.getElementById('checkoutModal').classList.add('open');
+    updateCheckoutSummary();
+}
+
+// ===== CLOSE CHECKOUT =====
+function closeCheckout() {
+    document.getElementById('checkoutModal').classList.remove('open');
+}
+
+// ===== SELECT PAYMENT =====
+function selectPayment(el, method) {
+    document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    state.paymentMethod = method;
+    updateCheckoutSummary();
+}
+
+// ===== UPDATE DELIVERY =====
+function updateDelivery() {
+    state.deliveryMethod = document.getElementById('deliveryMethod').value;
+    updateCart();
+    updateCheckoutSummary();
+}
+
+// ===== UPDATE CHECKOUT SUMMARY =====
+function updateCheckoutSummary() {
+    const subtotal = getSubtotal();
+    const delivery = state.deliveryMethod === 'delivery' ? 150 : 0;
+    let total = subtotal + delivery;
+    let bonusUsed = 0;
+    
+    if (state.paymentMethod === 'bonus') {
+        bonusUsed = Math.min(state.bonus, Math.floor(total * 0.5));
+        total -= bonusUsed;
+    }
+    
+    const el = document.getElementById('checkoutSummary');
+    el.innerHTML = `
+        <div class="cart-summary">
+            <div class="cart-summary-row">
+                <span>Сумма товаров:</span>
+                <span>${subtotal} ₽</span>
+            </div>
+            <div class="cart-summary-row">
+                <span>Доставка:</span>
+                <span>${delivery === 0 ? 'Бесплатно' : delivery + ' ₽'}</span>
+            </div>
+            ${bonusUsed > 0 ? `
+                <div class="cart-summary-row">
+                    <span>Списано бонусов:</span>
+                    <span style="color:#4caf50">-${bonusUsed} ₽</span>
+                </div>
+            ` : ''}
+            <div class="cart-summary-row total">
+                <span>К оплате:</span>
+                <span>${total} ₽</span>
+            </div>
+        </div>
+    `;
+}
+
+// ===== COMPLETE ORDER =====
+function completeOrder(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('customerName').value;
+    const address = document.getElementById('address').value;
+    
+    if (state.deliveryMethod === 'delivery' && !address.trim()) {
+        showToast('Укажите адрес доставки', 'error');
+        return;
+    }
+    
+    const subtotal = getSubtotal();
+    const delivery = state.deliveryMethod === 'delivery' ? 150 : 0;
+    let total = subtotal + delivery;
+    let bonusUsed = 0;
+    
+    if (state.paymentMethod === 'bonus') {
+        bonusUsed = Math.min(state.bonus, Math.floor(total * 0.5));
+        total -= bonusUsed;
+    }
+    
+    // Check balance
+    if (state.paymentMethod === 'balance' && state.balance < total) {
+        showToast('Недостаточно средств на балансе', 'error');
+        return;
+    }
+    
+    // Apply payment
+    if (state.paymentMethod === 'balance') {
+        state.balance -= total;
+    } else if (state.paymentMethod === 'bonus') {
+        state.bonus -= bonusUsed;
+    }
+    
+    // Add bonus
+    const bonusEarned = Math.floor(subtotal * 0.05);
+    state.bonus += bonusEarned;
+    
+    // Save order
+    const order = {
+        id: Date.now(),
+        date: new Date().toLocaleString('ru-RU'),
+        items: [...state.cart],
+        subtotal,
+        delivery,
+        bonusUsed,
+        total,
+        bonusEarned,
+        paymentMethod: state.paymentMethod,
+        deliveryMethod: state.deliveryMethod,
+        customerName: name
+    };
+    state.orderHistory.push(order);
+    
+    // Update UI
+    document.getElementById('balanceAmount').textContent = state.balance + ' ₽';
+    document.getElementById('bonusAmount').textContent = state.bonus;
+    
+    // Show receipt
+    showReceipt(order);
+    
+    // Clear cart
+    state.cart = [];
+    updateCart();
+    renderProducts();
+    closeCheckout();
+    
+    showToast('Заказ успешно оплачен!', 'success');
+}
+
+// ===== SHOW RECEIPT =====
+function showReceipt(order) {
+    const paymentNames = {
+        'balance': 'С баланса',
+        'bonus': 'Бонусами',
+        'card': 'Картой',
+        'cash': 'Наличные'
+    };
+    
+    const deliveryNames = {
+        'self': 'Самовывоз',
+        'delivery': 'Доставка курьером'
+    };
+    
+    const content = document.getElementById('receiptContent');
+    content.innerHTML = `
+        <div class="receipt-header">
+            <h3>МАГНИТ</h3>
+            <div>КАССОВЫЙ ЧЕК</div>
+            <div style="font-size:11px; margin-top:5px;">${order.date}</div>
+            <div style="font-size:11px;">Кассир: Иванова М.П.</div>
+            <div style="font-size:11px;">Чек № ${order.id.toString().slice(-8)}</div>
+        </div>
+        <div style="margin-bottom:10px; font-size:12px;">
+            <div>Покупатель: ${order.customerName}</div>
+            <div>Получение: ${deliveryNames[order.deliveryMethod]}</div>
+        </div>
+        <div class="receipt-items">
+            ${order.items.map(item => {
+                const p = products.find(pr => pr.id === item.id);
+                return `
+                    <div class="receipt-item">
+                        <span>${p.name}</span>
+                        <span></span>
+                    </div>
+                    <div class="receipt-item" style="padding-left:10px; color:#666;">
+                        <span>${item.qty} × ${p.price} ₽</span>
+                        <span>${item.qty * p.price} ₽</span>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+        <div class="receipt-item">
+            <span>Сумма:</span>
+            <span>${order.subtotal} ₽</span>
+        </div>
+        ${order.delivery > 0 ? `
+            <div class="receipt-item">
+                <span>Доставка:</span>
+                <span>${order.delivery} ₽</span>
+            </div>
+        ` : ''}
+        ${order.bonusUsed > 0 ? `
+            <div class="receipt-item">
+                <span>Списано бонусов:</span>
+                <span>-${order.bonusUsed} ₽</span>
+            </div>
+        ` : ''}
+        <div class="receipt-total">
+            <span>ИТОГО:</span>
+            <span>${order.total} ₽</span>
+        </div>
+        <div class="receipt-item" style="margin-top:8px;">
+            <span>Оплата:</span>
+            <span>${paymentNames[order.paymentMethod]}</span>
+        </div>
+        <div class="receipt-item">
+            <span>Начислено бонусов:</span>
+            <span style="color:#4caf50">+${order.bonusEarned}</span>
+        </div>
+        <div class="receipt-footer">
+            <div>СПАСИБО ЗА ПОКУПКУ!</div>
+            <div style="margin-top:5px;">Карта "Любимчик": **** 4521</div>
+            <div style="margin-top:5px;">Возврат в течение 14 дней</div>
+            <div style="margin-top:8px;">***  МАГНИТ  ***</div>
+        </div>
+    `;
+    document.getElementById('receiptModal').classList.add('open');
+}
+
+// ===== CLOSE RECEIPT =====
+function closeReceipt() {
+    document.getElementById('receiptModal').classList.remove('open');
+}
+
+// ===== SHOW TOAST =====
+function showToast(message, type = '') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast show ' + type;
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2500);
+}
+
+// ===== START =====
+init();
+</script>
+
+</body>
+</html>
