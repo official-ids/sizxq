@@ -1,0 +1,10 @@
+# Только для Яндекс и Google
+User-agent: YandexBot
+Disallow:
+
+User-agent: Googlebot
+Disallow:
+
+# Остальные боты запрещены
+User-agent: *
+Disallow: /
