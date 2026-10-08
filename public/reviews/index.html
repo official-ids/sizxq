@@ -1026,10 +1026,7 @@
             reader.readAsDataURL(file);
         }
 
-        // ============================================
-        // REVIEWS
-        // ============================================
-        async function loadReviews() {
+                async function loadReviews() {
             const grid = document.getElementById('reviewsGrid');
             grid.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
 
@@ -1044,19 +1041,68 @@
                     headers: currentToken ? { 'Authorization': `Bearer ${currentToken}` } : {}
                 });
 
-                const data = await res.json();
-                currentReviews = data.reviews;
-
-                if (data.reviews.length === 0) {
-                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-dim); padding: 40px;">Пока нет отзывов. Будь первым!</p>';
-                } else {
-                    grid.innerHTML = data.reviews.map(renderReview).join('');
+                // ПРОВЕРКА: если сервер вернул HTML (например, 404), а не JSON
+                const contentType = res.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    const text = await res.text();
+                    console.error("API вернула не JSON (возможно, 404 или HTML):", text.substring(0, 300));
+                    throw new Error("Сервер вернул HTML вместо JSON. Проверь, запущен ли сервер или правильный ли путь к API.");
                 }
 
-                renderPagination(data.pagination);
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    throw new Error(data.error || 'Ошибка загрузки отзывов');
+                }
+
+                currentReviews = data.reviews || [];
+
+                if (currentReviews.length === 0) {
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-dim); padding: 40px;">Пока нет отзывов. Будь первым!</p>';
+                } else {
+                    grid.innerHTML = currentReviews.map(renderReview).join('');
+                }
+
+                renderPagination(data.pagination || { page: 1, totalPages: 1, hasNext: false, hasPrev: false });
             } catch (e) {
                 console.error('Load reviews failed:', e);
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--error); padding: 40px;">Ошибка загрузки отзывов</p>';
+                grid.innerHTML = `
+                    <p style="grid-column: 1/-1; text-align: center; color: var(--error); padding: 40px;">
+                        Ошибка загрузки: ${e.message}<br>
+                        <small style="color: var(--text-muted);">
+                            Если ты открыл файл просто в браузере (file://), API работать не будет.<br>
+                            Используй локальный сервер (например, VS Code Live Server) или задеплой на Vercel.
+                        </small>
+                    </p>`;
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews/stats`);
+                
+                const contentType = res.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    // Если API нет, просто ставим нули, чтобы не ломать интерфейс
+                    console.warn("Stats API недоступна или вернула не JSON. Статистика скрыта.");
+                    document.getElementById('statTotal').textContent = '0';
+                    document.getElementById('statAvg').textContent = '0.0';
+                    document.getElementById('statLikes').textContent = '0';
+                    document.getElementById('statUsers').textContent = '0';
+                    return;
+                }
+
+                const data = await res.json();
+                if (!res.ok) return;
+
+                document.getElementById('statTotal').textContent = data.totalReviews || 0;
+                document.getElementById('statAvg').textContent = data.avgRating || '0.0';
+                document.getElementById('statLikes').textContent = data.totalLikes || 0;
+                
+                const users = new Set(currentReviews.map(r => r.authorUsername));
+                document.getElementById('statUsers').textContent = users.size || 0;
+            } catch (e) {
+                console.error('Load stats failed:', e);
             }
         }
 
