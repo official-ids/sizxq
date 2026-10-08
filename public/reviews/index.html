@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POZZINGSX - Отзывы</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           RESET & BASE
+           ============================================ */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0b0b0d;
+            --bg-2: #131318;
+            --bg-3: #1c1c24;
+            --surface: #16161d;
+            --border: #2a2a35;
+            --border-light: #3a3a48;
+            --text: #f0f0f5;
+            --text-dim: #8a8a9a;
+            --text-muted: #5a5a6a;
+            --accent: #c4ff00;
+            --accent-2: #ff3d00;
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --error: #ff3d00;
+            --font-display: 'Unbounded', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        html { scroll-behavior: smooth; font-size: 16px; }
+
+        body {
+            font-family: var(--font-display);
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        ::selection { background: var(--accent); color: var(--bg); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        a { color: inherit; text-decoration: none; }
+        button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+        ul { list-style: none; }
+        input, textarea, select { font-family: inherit; }
+
+        .noise {
+            position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: 0.035;
+            background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+        }
+
+        .grid-bg {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+        }
+
+        /* ============================================
+           NAV
+           ============================================ */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 20px 40px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(11, 11, 13, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-logo {
+            font-weight: 900; font-size: 20px; letter-spacing: -0.5px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .nav-logo-mark {
+            width: 32px; height: 32px; background: var(--accent); color: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 16px; transform: rotate(-4deg);
+        }
+
+        .nav-links {
+            display: flex; gap: 36px; align-items: center;
+        }
+
+        .nav-links a {
+            font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+            color: var(--text-dim); transition: color 0.2s; position: relative;
+        }
+
+        .nav-links a:hover { color: var(--accent); }
+
+        .nav-user {
+            display: flex; align-items: center; gap: 16px;
+        }
+
+        .nav-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            border: 2px solid var(--border); object-fit: cover;
+            cursor: pointer; transition: border-color 0.2s;
+        }
+
+        .nav-avatar:hover { border-color: var(--accent); }
+
+        .nav-username {
+            font-family: var(--font-mono); font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        /* ============================================
+           LAYOUT
+           ============================================ */
+        .page {
+            padding: 120px 40px 80px;
+            position: relative; z-index: 1;
+            max-width: 1400px; margin: 0 auto;
+        }
+
+        .page-head {
+            margin-bottom: 60px;
+        }
+
+        .page-tag {
+            font-family: var(--font-mono); font-size: 12px;
+            color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px;
+            margin-bottom: 24px; display: flex; align-items: center; gap: 12px;
+        }
+
+        .page-tag::before {
+            content: ''; width: 40px; height: 1px; background: var(--text-muted);
+        }
+
+        .page-title {
+            font-size: clamp(40px, 7vw, 80px);
+            font-weight: 900; text-transform: uppercase;
+            letter-spacing: -3px; line-height: 0.95;
+        }
+
+        .page-title em { font-style: normal; color: var(--accent); }
+
+        .page-sub {
+            font-family: var(--font-mono); font-size: 14px;
+            color: var(--text-dim); margin-top: 20px; max-width: 500px;
+            line-height: 1.6;
+        }
+
+        /* ============================================
+           STATS
+           ============================================ */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .stat-card {
+            background: var(--bg-2); border: 1px solid var(--border);
+            padding: 24px; text-align: center;
+        }
+
+        .stat-value {
+            font-size: 36px; font-weight: 900; color: var(--accent);
+            letter-spacing: -1px; margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-family: var(--font-mono); font-size: 12px;
+            color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        /* ============================================
+           AUTH MODAL
+           ============================================ */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px); z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+
+        .modal {
+            background: var(--bg-2); border: 1px solid var(--border);
+            max-width: 500px; width: 100%; max-height: 80vh; overflow-y: auto;
+            padding: 48px; position: relative;
+            transform: translateY(20px) scale(0.95);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal { transform: translateY(0) scale(1); }
+
+        .modal-close {
+            position: absolute; top: 20px; right: 20px;
+            width: 40px; height: 40px; border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; transition: all 0.2s;
+        }
+
+        .modal-close:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+        .modal-title {
+            font-size: 28px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: -1px; margin-bottom: 24px;
+        }
+
+        .auth-tabs {
+            display: flex; gap: 12px; margin-bottom: 32px;
+        }
+
+        .auth-tab {
+            flex: 1; padding: 14px; background: var(--bg);
+            border: 1px solid var(--border); font-family: var(--font-mono);
+            font-size: 13px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1px; transition: all 0.2s;
+        }
+
+        .auth-tab.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+        .form-group { margin-bottom: 20px; }
+
+        .form-label {
+            display: block; font-family: var(--font-mono); font-size: 12px;
+            color: var(--text-dim); margin-bottom: 8px; text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-input {
+            width: 100%; padding: 14px 16px; background: var(--bg);
+            border: 1px solid var(--border); color: var(--text);
+            font-family: var(--font-mono); font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus { outline: none; border-color: var(--accent); }
+
+        .form-input::placeholder { color: var(--text-muted); }
+
+        .form-hint {
+            font-family: var(--font-mono); font-size: 11px;
+            color: var(--text-muted); margin-top: 6px;
+        }
+
+        .btn {
+            font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 1px;
+            padding: 14px 28px; transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--accent); color: var(--bg); width: 100%;
+            justify-content: center;
+        }
+
+        .btn-primary:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--accent-2); }
+
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .error-message {
+            background: rgba(255, 61, 0, 0.1); border: 1px solid var(--error);
+            color: var(--error); padding: 12px 16px; margin-bottom: 20px;
+            font-family: var(--font-mono); font-size: 12px;
+        }
+
+        .success-message {
+            background: rgba(0, 255, 136, 0.1); border: 1px solid var(--success);
+            color: var(--success); padding: 12px 16px; margin-bottom: 20px;
+            font-family: var(--font-mono); font-size: 12px;
+        }
+
+        /* ============================================
+           PROFILE
+           ============================================ */
+        .profile-section {
+            background: var(--bg-2); border: 1px solid var(--border);
+            padding: 40px; margin-bottom: 40px;
+        }
+
+        .profile-header {
+            display: flex; align-items: center; gap: 24px;
+            margin-bottom: 32px; padding-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .profile-avatar {
+            width: 80px; height: 80px; border-radius: 50%;
+            border: 3px solid var(--border); object-fit: cover;
+        }
+
+        .profile-info h3 {
+            font-size: 24px; font-weight: 800; margin-bottom: 4px;
+        }
+
+        .profile-info .username {
+            font-family: var(--font-mono); font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .profile-stats {
+            display: flex; gap: 24px; margin-top: 12px;
+        }
+
+        .profile-stat {
+            font-family: var(--font-mono); font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .profile-stat strong { color: var(--accent); }
+
+        .avatar-options {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .avatar-option {
+            padding: 12px; background: var(--bg); border: 1px solid var(--border);
+            cursor: pointer; transition: all 0.2s; text-align: center;
+            font-family: var(--font-mono); font-size: 12px;
+        }
+
+        .avatar-option:hover { border-color: var(--border-light); }
+
+        .avatar-option.active { border-color: var(--accent); background: rgba(196, 255, 0, 0.05); }
+
+        .file-input { display: none; }
+
+        /* ============================================
+           REVIEWS GRID
+           ============================================ */
+        .reviews-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
+        }
+
+        .reviews-title {
+            font-size: 24px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+
+        .reviews-filters {
+            display: flex; gap: 12px; flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px; background: var(--bg); border: 1px solid var(--border);
+            font-family: var(--font-mono); font-size: 12px; cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); }
+
+        .reviews-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 24px;
+        }
+
+        .review-card {
+            background: var(--bg-2); border: 1px solid var(--border);
+            padding: 28px; transition: all 0.3s;
+        }
+
+        .review-card:hover { border-color: var(--border-light); transform: translateY(-2px); }
+
+        .review-header {
+            display: flex; align-items: center; gap: 16px; margin-bottom: 16px;
+        }
+
+        .review-avatar {
+            width: 48px; height: 48px; border-radius: 50%;
+            border: 2px solid var(--border); object-fit: cover;
+        }
+
+        .review-author { flex: 1; }
+
+        .review-author-name {
+            font-weight: 700; margin-bottom: 2px;
+        }
+
+        .review-author-meta {
+            font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
+        }
+
+        .review-rating {
+            display: flex; gap: 4px;
+        }
+
+        .star {
+            width: 20px; height: 20px; color: var(--warning);
+        }
+
+        .star.empty { color: var(--text-muted); }
+
+        .review-content {
+            font-size: 14px; line-height: 1.7; color: var(--text-dim);
+            margin-bottom: 16px; white-space: pre-wrap;
+        }
+
+        .review-service {
+            font-family: var(--font-mono); font-size: 12px;
+            color: var(--accent); margin-bottom: 16px;
+        }
+
+        .review-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: 16px; border-top: 1px solid var(--border);
+        }
+
+        .review-actions {
+            display: flex; gap: 12px;
+        }
+
+        .action-btn {
+            display: flex; align-items: center; gap: 6px;
+            font-family: var(--font-mono); font-size: 12px;
+            color: var(--text-dim); padding: 6px 12px;
+            border: 1px solid var(--border); transition: all 0.2s;
+        }
+
+        .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        .action-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+        .review-date {
+            font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
+        }
+
+        .review-edited {
+            font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);
+            margin-left: 8px;
+        }
+
+        /* ============================================
+           CREATE REVIEW
+           ============================================ */
+        .create-review {
+            background: var(--bg-2); border: 1px solid var(--border);
+            padding: 40px; margin-bottom: 40px;
+        }
+
+        .create-title {
+            font-size: 20px; font-weight: 800; text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .rating-input {
+            display: flex; gap: 8px; margin-bottom: 20px;
+        }
+
+        .rating-star {
+            width: 40px; height: 40px; font-size: 24px;
+            cursor: pointer; color: var(--text-muted);
+            transition: color 0.2s;
+        }
+
+        .rating-star:hover, .rating-star.active { color: var(--warning); }
+
+        .textarea {
+            width: 100%; min-height: 150px; padding: 16px;
+            background: var(--bg); border: 1px solid var(--border);
+            color: var(--text); font-family: var(--font-mono);
+            font-size: 14px; resize: vertical; margin-bottom: 20px;
+        }
+
+        .textarea:focus { outline: none; border-color: var(--accent); }
+
+        /* ============================================
+           PAGINATION
+           ============================================ */
+        .pagination {
+            display: flex; justify-content: center; gap: 8px; margin-top: 40px;
+        }
+
+        .page-btn {
+            width: 40px; height: 40px; border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-mono); font-size: 13px; cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover, .page-btn.active { border-color: var(--accent); color: var(--accent); }
+
+        .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* ============================================
+           EMBED
+           ============================================ */
+        .embed-section {
+            background: var(--bg-2); border: 1px solid var(--border);
+            padding: 40px; margin-bottom: 40px;
+        }
+
+        .embed-code {
+            background: var(--bg); border: 1px solid var(--border);
+            padding: 16px; font-family: var(--font-mono); font-size: 12px;
+            color: var(--text-dim); overflow-x: auto; margin-top: 16px;
+        }
+
+        /* ============================================
+           LOADING
+           ============================================ */
+        .loading {
+            display: flex; justify-content: center; align-items: center;
+            padding: 60px;
+        }
+
+        .spinner {
+            width: 40px; height: 40px; border: 3px solid var(--border);
+            border-top-color: var(--accent); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .reviews-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .nav { padding: 16px 20px; }
+            .nav-links { display: none; }
+            .page { padding: 100px 20px 60px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .profile-header { flex-direction: column; text-align: center; }
+            .profile-stats { justify-content: center; }
+            .avatar-options { grid-template-columns: 1fr; }
+            .reviews-grid { grid-template-columns: 1fr; }
+            .modal { padding: 32px 24px; }
+        }
+
+        /* Cursor dot */
+        .cursor-dot {
+            width: 8px; height: 8px; background: var(--accent);
+            border-radius: 50%; position: fixed; pointer-events: none;
+            z-index: 10000; transition: transform 0.1s;
+            mix-blend-mode: difference;
+        }
+
+        @media (pointer: coarse) { .cursor-dot { display: none; } }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="grid-bg"></div>
+    <div class="cursor-dot" id="cursorDot"></div>
+
+    <!-- NAV -->
+    <nav class="nav">
+        <a href="/" class="nav-logo">
+            <span class="nav-logo-mark">P</span>
+            POZZINGSX
+        </a>
+        <div class="nav-links">
+            <a href="/">Главная</a>
+            <a href="/order">Заказать</a>
+            <a href="/reviews" style="color: var(--accent);">Отзывы</a>
+        </div>
+        <div class="nav-user" id="navUser">
+            <!-- Dynamic content -->
+        </div>
+    </nav>
+
+    <!-- AUTH MODAL -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeAuthModal()">×</button>
+            <h2 class="modal-title">Аккаунт</h2>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Вход</button>
+                <button class="auth-tab" onclick="switchAuthTab('register')">Регистрация</button>
+            </div>
+
+            <div id="authError"></div>
+            <div id="authSuccess"></div>
+
+            <!-- LOGIN FORM -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Имя пользователя</label>
+                    <input type="text" class="form-input" id="loginUsername" required placeholder="your_username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" class="form-input" id="loginPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary">Войти</button>
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form id="registerForm" style="display: none;" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label class="form-label">Имя пользователя *</label>
+                    <input type="text" class="form-input" id="regUsername" required placeholder="3-20 символов" minlength="3" maxlength="20">
+                    <div class="form-hint">Только буквы, цифры и подчеркивания</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Пароль *</label>
+                    <input type="password" class="form-input" id="regPassword" required placeholder="Минимум 4 символа" minlength="4">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Отображаемое имя</label>
+                    <input type="text" class="form-input" id="regDisplayName" placeholder="Как тебя называть в отзывах">
+                    <div class="form-hint">Оставь пустым для использования имени пользователя</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Создать аккаунт</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal" style="max-width: 600px;">
+            <button class="modal-close" onclick="closeProfileModal()">×</button>
+            <h2 class="modal-title">Профиль</h2>
+            
+            <div id="profileError"></div>
+            <div id="profileSuccess"></div>
+
+            <form onsubmit="handleProfileUpdate(event)">
+                <div class="form-group">
+                    <label class="form-label">Отображаемое имя</label>
+                    <input type="text" class="form-input" id="profileDisplayName" placeholder="Твое имя">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Никнейм в Roblox</label>
+                    <input type="text" class="form-input" id="profileRoblox" placeholder="Roblox username (опционально)">
+                    <div class="form-hint">Если указан, можно автоматически подтянуть аватар</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Аватар</label>
+                    <div class="avatar-options">
+                        <div class="avatar-option active" data-mode="none" onclick="selectAvatarMode('none')">
+                            Нет аватара
+                        </div>
+                        <div class="avatar-option" data-mode="roblox" onclick="selectAvatarMode('roblox')">
+                            Из Roblox
+                        </div>
+                        <div class="avatar-option" data-mode="upload" onclick="selectAvatarMode('upload')">
+                            Загрузить
+                        </div>
+                    </div>
+
+                    <div id="robloxAHint" style="display: none;" class="form-hint">
+                        Аватар будет автоматически подтянут из Roblox
+                    </div>
+
+                    <div id="uploadAvatarSection" style="display: none;">
+                        <input type="file" class="file-input" id="avatarFile" accept="image/*" onchange="handleAvatarUpload(event)">
+                        <button type="button" class="btn btn-ghost" onclick="document.getElementById('avatarFile').click()" style="width: 100%; margin-top: 12px;">
+                            Выбрать файл
+                        </button>
+                        <div id="uploadPreview" style="margin-top: 12px;"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Автообновление</label>
+                    <input type="number" class="form-input" id="autoRefresh" placeholder="Интервал в минутах (0 = выкл)" min="0" max="60" value="0">
+                    <div class="form-hint">0 = отключено, минимум 1 минута</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 24px;">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PAGE -->
+    <div class="page">
+        <div class="page-head">
+            <div class="page-tag">pozingsx / reviews / 2026</div>
+            <h1 class="page-title">Отзывы<br><em>клиентов</em></h1>
+            <p class="page-sub">Честные отзывы от реальных людей. Читай, оценивай, оставляй свой.</p>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">Всего отзывов</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statAvg">0.0</div>
+                <div class="stat-label">Средний рейтинг</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statLikes">0</div>
+                <div class="stat-label">Всего лайков</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statUsers">0</div>
+                <div class="stat-label">Активных авторов</div>
+            </div>
+        </div>
+
+        <!-- CREATE REVIEW (if logged in) -->
+        <div class="create-review" id="createReviewSection" style="display: none;">
+            <h3 class="create-title">Оставить отзыв</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Оценка</label>
+                <div class="rating-input" id="ratingInput">
+                    <span class="rating-star" data-rating="1" onclick="setRating(1)">★</span>
+                    <span class="rating-star" data-rating="2" onclick="setRating(2)">★</span>
+                    <span class="rating-star" data-rating="3" onclick="setRating(3)">★</span>
+                    <span class="rating-star" data-rating="4" onclick="setRating(4)">★</span>
+                    <span class="rating-star" data-rating="5" onclick="setRating(5)">★</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Текст отзыва</label>
+                <textarea class="textarea" id="reviewContent" placeholder="Расскажи о своем опыте... (минимум 10 символов)" minlength="10" maxlength="2000"></textarea>
+                <div class="form-hint"><span id="contentLength">0</span>/2000</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Название услуги (опционально)</label>
+                <input type="text" class="form-input" id="serviceName" placeholder="Например: Позинг для двоих">
+            </div>
+
+            <button class="btn btn-primary" onclick="submitReview()">Опубликовать отзыв</button>
+        </div>
+
+        <!-- NOT LOGGED IN MESSAGE -->
+        <div id="notLoggedInMessage" style="text-align: center; padding: 40px; background: var(--bg-2); border: 1px solid var(--border); margin-bottom: 40px;">
+            <p style="margin-bottom: 20px; color: var(--text-dim);">Чтобы оставить отзыв, нужно войти или зарегистрироваться</p>
+            <button class="btn btn-primary" onclick="openAuthModal()">Войти / Регистрация</button>
+        </div>
+
+        <!-- REVIEWS HEADER -->
+        <div class="reviews-header">
+            <h3 class="reviews-title">Все отзывы</h3>
+            <div class="reviews-filters">
+                <button class="filter-btn active" onclick="filterReviews('recent')">Свежие</button>
+                <button class="filter-btn" onclick="filterReviews('top')">Популярные</button>
+                <button class="filter-btn" onclick="filterReviews('rating')">По рейтингу</button>
+            </div>
+        </div>
+
+        <!-- REVIEWS GRID -->
+        <div class="reviews-grid" id="reviewsGrid">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination" id="pagination"></div>
+
+        <!-- EMBED SECTION -->
+        <div class="embed-section">
+            <h3 class="create-title">Встроить отзыв на сайт</h3>
+            <p style="color: var(--text-dim); margin-bottom: 20px; font-family: var(--font-mono); font-size: 13px;">
+                Скопируй этот код и вставь на свой сайт:
+            </p>
+            <div class="embed-code" id="embedCode">
+                &lt;iframe src="https://pozzingsx.vercel.app/embed/reviews" width="100%" height="600" frameborder="0"&gt;&lt;/iframe&gt;
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // STATE
+        // ============================================
+        let currentUser = null;
+        let currentToken = null;
+        let currentReviews = [];
+        let currentPage = 1;
+        let currentSort = 'recent';
+        let selectedRating = 0;
+        let selectedAvatarMode = 'none';
+        let uploadedAvatarUrl = null;
+        let autoRefreshInterval = null;
+
+        const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadReviews();
+            loadStats();
+            setupAutoRefresh();
+            setupCursor();
+            setupContentLength();
+        });
+
+        // ============================================
+        // AUTH
+        // ============================================
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                updateNavUI();
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    currentUser = await res.json();
+                    currentToken = token;
+                    updateNavUI();
+                    showCreateReview();
+                } else {
+                    localStorage.removeItem('token');
+                }
+            } catch (e) {
+                console.error('Auth check failed:', e);
+            }
+        }
+
+        function updateNavUI() {
+            const navUser = document.getElementById('navUser');
+            if (currentUser) {
+                const avatar = currentUser.avatarUrl || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect fill="%232a2a35" width="100" height="100"/%3E%3Ctext fill="%238a8a9a" font-family="monospace" font-size="40" x="50" y="65" text-anchor="middle"%3E' + currentUser.username[0].toUpperCase() + '%3C/text%3E%3C/svg%3E';
+                
+                navUser.innerHTML = `
+                    <span class="nav-username">${currentUser.displayName}</span>
+                    <img src="${avatar}" alt="Avatar" class="nav-avatar" onclick="openProfileModal()">
+                    <button class="btn btn-ghost" onclick="logout()" style="padding: 8px 16px; font-size: 12px;">Выйти</button>
+                `;
+            } else {
+                navUser.innerHTML = `
+                    <button class="btn btn-primary" onclick="openAuthModal()" style="padding: 10px 20px; font-size: 12px;">
+                        Войти
+                    </button>
+                `;
+            }
+        }
+
+        function showCreateReview() {
+            document.getElementById('createReviewSection').style.display = 'block';
+            document.getElementById('notLoggedInMessage').style.display = 'none';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('token', data.token);
+                    currentUser = data.user;
+                    currentToken = data.token;
+                    closeAuthModal();
+                    updateNavUI();
+                    showCreateReview();
+                    showAuthSuccess('Успешный вход!');
+                } else {
+                    showAuthError(data.error || 'Ошибка входа');
+                }
+            } catch (e) {
+                showAuthError('Ошибка соединения');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const displayName = document.getElementById('regDisplayName').value.trim();
+
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, displayName })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('token', data.token);
+                    currentUser = data.user;
+                    currentToken = data.token;
+                    closeAuthModal();
+                    updateNavUI();
+                    showCreateReview();
+                    showAuthSuccess('Аккаунт создан!');
+                } else {
+                    showAuthError(data.error || 'Ошибка регистрации');
+                }
+            } catch (e) {
+                showAuthError('Ошибка соединения');
+            }
+        }
+
+        async function logout() {
+            if (currentToken) {
+                await fetch(`${API_BASE}/api/reviews/auth/logout`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+            }
+            localStorage.removeItem('token');
+            currentUser = null;
+            currentToken = null;
+            updateNavUI();
+            document.getElementById('createReviewSection').style.display = 'none';
+            document.getElementById('notLoggedInMessage').style.display = 'block';
+        }
+
+        // ============================================
+        // PROFILE
+        // ============================================
+        async function handleProfileUpdate(e) {
+            e.preventDefault();
+            
+            const displayName = document.getElementById('profileDisplayName').value.trim();
+            const robloxUsername = document.getElementById('profileRoblox').value.trim();
+            const autoRefresh = parseInt(document.getElementById('autoRefresh').value) || 0;
+
+            const updates = {
+                displayName: displayName || undefined,
+                robloxUsername: robloxUsername || null,
+                avatarMode: selectedAvatarMode,
+            };
+
+            if (selectedAvatarMode === 'upload' && uploadedAvatarUrl) {
+                updates.avatarUrl = uploadedAvatarUrl;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews/auth/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify(updates)
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    currentUser = data;
+                    closeProfileModal();
+                    updateNavUI();
+                    showProfileSuccess('Профиль обновлен!');
+                    
+                    // Setup auto-refresh
+                    if (autoRefresh > 0) {
+                        localStorage.setItem('autoRefresh', autoRefresh);
+                        setupAutoRefresh();
+                    } else {
+                        localStorage.removeItem('autoRefresh');
+                        if (autoRefreshInterval) {
+                            clearInterval(autoRefreshInterval);
+                            autoRefreshInterval = null;
+                        }
+                    }
+                } else {
+                    showProfileError(data.error || 'Ошибка обновления');
+                }
+            } catch (e) {
+                showProfileError('Ошибка соединения');
+            }
+        }
+
+        function selectAvatarMode(mode) {
+            selectedAvatarMode = mode;
+            document.querySelectorAll('.avatar-option').forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.mode === mode);
+            });
+
+            document.getElementById('robloxAHint').style.display = mode === 'roblox' ? 'block' : 'none';
+            document.getElementById('uploadAvatarSection').style.display = mode === 'upload' ? 'block' : 'none';
+        }
+
+        async function handleAvatarUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Файл слишком большой (макс. 5MB)');
+                return;
+            }
+
+            // In production, upload to Vercel Blob or similar
+            // For now, use base64 (not recommended for production)
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                uploadedAvatarUrl = event.target.result;
+                document.getElementById('uploadPreview').innerHTML = `
+                    <img src="${uploadedAvatarUrl}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent);">
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ============================================
+        // REVIEWS
+        // ============================================
+        async function loadReviews() {
+            const grid = document.getElementById('reviewsGrid');
+            grid.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+            try {
+                const params = new URLSearchParams({
+                    page: currentPage,
+                    limit: 10,
+                    sort: currentSort
+                });
+
+                const res = await fetch(`${API_BASE}/api/reviews?${params}`, {
+                    headers: currentToken ? { 'Authorization': `Bearer ${currentToken}` } : {}
+                });
+
+                const data = await res.json();
+                currentReviews = data.reviews;
+
+                if (data.reviews.length === 0) {
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-dim); padding: 40px;">Пока нет отзывов. Будь первым!</p>';
+                } else {
+                    grid.innerHTML = data.reviews.map(renderReview).join('');
+                }
+
+                renderPagination(data.pagination);
+            } catch (e) {
+                console.error('Load reviews failed:', e);
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--error); padding: 40px;">Ошибка загрузки отзывов</p>';
+            }
+        }
+
+        function renderReview(review) {
+            const stars = Array(5).fill(0).map((_, i) => 
+                `<svg class="star ${i < review.rating ? '' : 'empty'}" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`
+            ).join('');
+
+            const avatar = review.authorAvatar || `data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect fill="%232a2a35" width="100" height="100"/%3E%3Ctext fill="%238a8a9a" font-family="monospace" font-size="40" x="50" y="65" text-anchor="middle"%3E${review.authorDisplayName[0].toUpperCase()}%3C/text%3E%3C/svg%3E`;
+
+            const date = new Date(review.createdAt).toLocaleDateString('ru-RU');
+            const isLiked = review.userLiked;
+            const isDisliked = review.userDisliked;
+
+            return `
+                <div class="review-card" data-id="${review.id}">
+                    <div class="review-header">
+                        <img src="${avatar}" alt="${review.authorDisplayName}" class="review-avatar">
+                        <div class="review-author">
+                            <div class="review-author-name">${review.authorDisplayName}</div>
+                            <div class="review-author-meta">
+                                @${review.authorUsername}
+                                ${review.authorRoblox ? `• ${review.authorRoblox}` : ''}
+                            </div>
+                        </div>
+                        <div class="review-rating">${stars}</div>
+                    </div>
+                    
+                    ${review.serviceName ? `<div class="review-service">[${review.serviceName}]</div>` : ''}
+                    
+                    <div class="review-content">${escapeHtml(review.content)}</div>
+                    
+                    <div class="review-footer">
+                        <div class="review-actions">
+                            <button class="action-btn ${isLiked ? 'active' : ''}" onclick="likeReview('${review.id}')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                ${review.likes || 0}
+                            </button>
+                            <button class="action-btn ${isDisliked ? 'active' : ''}" onclick="dislikeReview('${review.id}')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.65l1.45 1.32C18.6 8.64 22 11.72 22 15.5 22 18.58 19.58 21 16.5 21c-1.74 0-3.41-.81-4.5-2.09C10.91 20.19 9.24 21 7.5 21 4.42 21 2 18.58 2 15.5c0-3.78 3.4-6.86 8.55-11.54L12 2.65z"/></svg>
+                                ${review.dislikes || 0}
+                            </button>
+                            <button class="action-btn" onclick="embedReview('${review.id}')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                            </button>
+                        </div>
+                        <div class="review-date">
+                            ${date}
+                            ${review.isEdited ? '<span class="review-edited">(изменено)</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderPagination(pagination) {
+            const container = document.getElementById('pagination');
+            if (pagination.totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            
+            html += `<button class="page-btn" onclick="goToPage(${pagination.page - 1})" ${!pagination.hasPrev ? 'disabled' : ''}>←</button>`;
+            
+            for (let i = 1; i <= Math.min(pagination.totalPages, 5); i++) {
+                html += `<button class="page-btn ${i === pagination.page ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            
+            if (pagination.totalPages > 5) {
+                html += '<span style="align-self: center; color: var(--text-dim);">...</span>';
+                html += `<button class="page-btn" onclick="goToPage(${pagination.totalPages})">${pagination.totalPages}</button>`;
+            }
+            
+            html += `<button class="page-btn" onclick="goToPage(${pagination.page + 1})" ${!pagination.hasNext ? 'disabled' : ''}>→</button>`;
+            
+            container.innerHTML = html;
+        }
+
+        async function submitReview() {
+            const content = document.getElementById('reviewContent').value.trim();
+            const serviceName = document.getElementById('serviceName').value.trim();
+
+            if (selectedRating === 0) {
+                alert('Выберите оценку');
+                return;
+            }
+
+            if (content.length < 10) {
+                alert('Отзыв должен быть не менее 10 символов');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify({
+                        content,
+                        rating: selectedRating,
+                        serviceName
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Reset form
+                    selectedRating = 0;
+                    document.getElementById('reviewContent').value = '';
+                    document.getElementById('serviceName').value = '';
+                    document.querySelectorAll('.rating-star').forEach(s => s.classList.remove('active'));
+                    document.getElementById('contentLength').textContent = '0';
+                    
+                    // Reload
+                    currentPage = 1;
+                    await loadReviews();
+                    await loadStats();
+                } else {
+                    alert(data.error || 'Ошибка публикации');
+                }
+            } catch (e) {
+                alert('Ошибка соединения');
+            }
+        }
+
+        async function likeReview(id) {
+            if (!currentUser) {
+                openAuthModal();
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews/${id}/like`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                if (res.ok) {
+                    await loadReviews();
+                }
+            } catch (e) {
+                console.error('Like failed:', e);
+            }
+        }
+
+        async function dislikeReview(id) {
+            if (!currentUser) {
+                openAuthModal();
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews/${id}/dislike`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                if (res.ok) {
+                    await loadReviews();
+                }
+            } catch (e) {
+                console.error('Dislike failed:', e);
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews/stats`);
+                const data = await res.json();
+
+                document.getElementById('statTotal').textContent = data.totalReviews || 0;
+                document.getElementById('statAvg').textContent = data.avgRating || '0.0';
+                document.getElementById('statLikes').textContent = data.totalLikes || 0;
+                
+                // Count unique users
+                const users = new Set();
+                currentReviews.forEach(r => users.add(r.authorUsername));
+                document.getElementById('statUsers').textContent = users.size;
+            } catch (e) {
+                console.error('Load stats failed:', e);
+            }
+        }
+
+        // ============================================
+        // UI HELPERS
+        // ============================================
+        function setRating(r) {
+            selectedRating = r;
+            document.querySelectorAll('.rating-star').forEach((star, i) => {
+                star.classList.toggle('active', i < r);
+            });
+        }
+
+        function filterReviews(sort) {
+            currentSort = sort;
+            currentPage = 1;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.toLowerCase().includes(sort === 'recent' ? 'свежие' : sort === 'top' ? 'популярные' : 'рейтингу'));
+            });
+            loadReviews();
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            loadReviews();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function setupContentLength() {
+            const textarea = document.getElementById('reviewContent');
+            const counter = document.getElementById('contentLength');
+            
+            textarea.addEventListener('input', () => {
+                counter.textContent = textarea.value.length;
+            });
+        }
+
+        function setupAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+
+            const minutes = parseInt(localStorage.getItem('autoRefresh')) || 0;
+            if (minutes > 0) {
+                autoRefreshInterval = setInterval(() => {
+                    loadReviews();
+                    loadStats();
+                }, minutes * 60 * 1000);
+            }
+        }
+
+        function setupCursor() {
+            const dot = document.getElementById('cursorDot');
+            if (!dot || window.matchMedia('(pointer: coarse)').matches) return;
+
+            document.addEventListener('mousemove', (e) => {
+                dot.style.left = e.clientX - 4 + 'px';
+                dot.style.top = e.clientY - 4 + 'px';
+            });
+
+            document.querySelectorAll('a, button, .review-card').forEach(el => {
+                el.addEventListener('mouseenter', () => { dot.style.transform = 'scale(3)'; });
+                el.addEventListener('mouseleave', () => { dot.style.transform = 'scale(1)'; });
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============================================
+        // MODALS
+        // ============================================
+        function openAuthModal() {
+            document.getElementById('authModal').classList.add('active');
+            document.getElementById('authError').innerHTML = '';
+            document.getElementById('authSuccess').innerHTML = '';
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tab === 'login') {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+            } else {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+            }
+        }
+
+        function openProfileModal() {
+            if (!currentUser) return;
+            
+            document.getElementById('profileDisplayName').value = currentUser.displayName || '';
+            document.getElementById('profileRoblox').value = currentUser.robloxUsername || '';
+            document.getElementById('autoRefresh').value = localStorage.getItem('autoRefresh') || '0';
+            
+            selectedAvatarMode = currentUser.avatarMode || 'none';
+            uploadedAvatarUrl = currentUser.avatarUrl;
+            
+            document.querySelectorAll('.avatar-option').forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.mode === selectedAvatarMode);
+            });
+            
+            document.getElementById('robloxAHint').style.display = selectedAvatarMode === 'roblox' ? 'block' : 'none';
+            document.getElementById('uploadAvatarSection').style.display = selectedAvatarMode === 'upload' ? 'block' : 'none';
+            
+            if (selectedAvatarMode === 'upload' && uploadedAvatarUrl) {
+                document.getElementById('uploadPreview').innerHTML = `
+                    <img src="${uploadedAvatarUrl}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent);">
+                `;
+            }
+            
+            document.getElementById('profileModal').classList.add('active');
+            document.getElementById('profileError').innerHTML = '';
+            document.getElementById('profileSuccess').innerHTML = '';
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('active');
+        }
+
+        function showAuthError(msg) {
+            document.getElementById('authError').innerHTML = `<div class="error-message">${msg}</div>`;
+        }
+
+        function showAuthSuccess(msg) {
+            document.getElementById('authSuccess').innerHTML = `<div class="success-message">${msg}</div>`;
+            setTimeout(() => {
+                document.getElementById('authSuccess').innerHTML = '';
+            }, 3000);
+        }
+
+        function showProfileError(msg) {
+            document.getElementById('profileError').innerHTML = `<div class="error-message">${msg}</div>`;
+        }
+
+        function showProfileSuccess(msg) {
+            document.getElementById('profileSuccess').innerHTML = `<div class="success-message">${msg}</div>`;
+            setTimeout(() => {
+                document.getElementById('profileSuccess').innerHTML = '';
+            }, 3000);
+        }
+
+        // Close modals on outside click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+
+        // Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+            }
+        });
+    </script>
+</body>
+</html>
